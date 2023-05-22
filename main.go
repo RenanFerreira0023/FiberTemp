@@ -1,30 +1,17 @@
 package main
 
 import (
-	"os"
+	"fmt"
+	"log"
+	"net/http"
 
-	"github.com/gofiber/fiber/v2"
+	"./routers"
 )
 
-func getPort() string {
-	port := os.Getenv("PORT")
-	if port == "" {
-		port = ":3000"
-	} else {
-		port = ":" + port
-	}
-
-	return port
-}
-
 func main() {
-	app := fiber.New()
+	fmt.Println("Starting server on port 8080...")
 
-	app.Get("/", func(c *fiber.Ctx) error {
-		return c.JSON(fiber.Map{
-			"message": "Hello, Railway!",
-		})
-	})
+	router := routers.NewRouter()
 
-	app.Listen(getPort())
+	log.Fatal(http.ListenAndServe(":8080", router))
 }

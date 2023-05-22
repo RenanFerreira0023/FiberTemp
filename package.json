@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "@mux/mux-node": "^7.3.0"
+  }
+}
