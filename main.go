@@ -4,14 +4,21 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 
 	"github.com/RenanFerreira0023/FiberTemp/routers"
+	"github.com/joho/godotenv"
 )
 
 func main() {
-	fmt.Println("Starting server on port 8080...")
+	err := godotenv.Load(".env") // Carrega as variáveis do arquivo .env
+	if err != nil {
+		log.Fatal("Erro ao carregar o arquivo .env:", err)
+	}
+	portSystem := os.Getenv("PORT_SYSTEM")
+	fmt.Println("Starting server on port " + portSystem + "...")
 
 	router := routers.NewRouter()
 
-	log.Fatal(http.ListenAndServe(":8080", router))
+	log.Fatal(http.ListenAndServe(":"+portSystem, router))
 }
