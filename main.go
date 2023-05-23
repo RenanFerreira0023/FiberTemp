@@ -3,10 +3,9 @@ package main
 import (
 	"fmt"
 	"log"
-	"net/http"
 	"os"
 
-	"github.com/RenanFerreira0023/FiberTemp/routers"
+	"github.com/gofiber/fiber/v2"
 	"github.com/joho/godotenv"
 )
 
@@ -18,7 +17,8 @@ func main() {
 	portSystem := os.Getenv("PORT_SYSTEM")
 	fmt.Println("Starting server on port " + portSystem + "...")
 
-	router := routers.NewRouter()
+	//	router := routers.NewRouter()
+	router := fiber.New()
 	fmt.Println("Entrou 1")
-	log.Fatal(http.ListenAndServe(":"+portSystem, router))
+	router.Listen(":" + portSystem)
 }
