@@ -5,7 +5,7 @@ import (
 	"log"
 	"net/http"
 
-	"./routers"
+	"github.com/RenanFerreira0023/FiberTemp/routers"
 )
 
 func main() {

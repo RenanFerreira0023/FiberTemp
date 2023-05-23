@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	"../../models"
+	"github.com/RenanFerreira0023/FiberTemp/models"
 )
 
 type ReceptorRepository struct {

@@ -8,10 +8,10 @@ import (
 	"strconv"
 	"time"
 
-	"../../models"
+	"github.com/RenanFerreira0023/FiberTemp/models"
 
-	"../../middleware"
-	repositories "../../repositories/agent"
+	"github.com/RenanFerreira0023/FiberTemp/middleware"
+	repositories "github.com/RenanFerreira0023/FiberTemp/repositories/agent"
 )
 
 type AgentController struct {

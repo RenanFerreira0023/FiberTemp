@@ -8,7 +8,7 @@ import (
 	"strings"
 	"sync"
 
-	"../models"
+	"github.com/RenanFerreira0023/FiberTemp/models"
 
 	"time"
 

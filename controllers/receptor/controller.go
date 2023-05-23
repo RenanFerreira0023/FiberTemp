@@ -8,9 +8,9 @@ import (
 	"strconv"
 	"time"
 
-	"../../middleware"
-	"../../models"
-	repositories "../../repositories/receptor"
+	"github.com/RenanFerreira0023/FiberTemp/middleware"
+	"github.com/RenanFerreira0023/FiberTemp/models"
+	repositories "github.com/RenanFerreira0023/FiberTemp/repositories/receptor"
 )
 
 type ReceptorController struct {

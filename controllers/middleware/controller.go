@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"../../middleware"
-	"../../models"
+	"github.com/RenanFerreira0023/FiberTemp/middleware"
+	"github.com/RenanFerreira0023/FiberTemp/models"
 )
 
 func CreateAuthMiddleware(next http.Handler) http.Handler {

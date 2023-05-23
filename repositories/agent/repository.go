@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"../../models"
+	"github.com/RenanFerreira0023/FiberTemp/models"
 )
 
 type AgentRepository struct {

@@ -3,12 +3,12 @@ package routers
 import (
 	"net/http"
 
-	"../config"
-	controllerAgent "../controllers/agent"
-	middlewareController "../controllers/middleware"
-	controllerReceptor "../controllers/receptor"
-	repositoryAgent "../repositories/agent"
-	repositoryReceptor "../repositories/receptor"
+	"github.com/RenanFerreira0023/FiberTemp/config"
+	controllerAgent "github.com/RenanFerreira0023/FiberTemp/controllers/agent"
+	middlewareController "github.com/RenanFerreira0023/FiberTemp/controllers/middleware"
+	controllerReceptor "github.com/RenanFerreira0023/FiberTemp/controllers/receptor"
+	repositoryAgent "github.com/RenanFerreira0023/FiberTemp/repositories/agent"
+	repositoryReceptor "github.com/RenanFerreira0023/FiberTemp/repositories/receptor"
 )
 
 func NewRouter() http.Handler {
