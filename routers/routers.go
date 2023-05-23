@@ -1,7 +1,6 @@
 package routers
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/RenanFerreira0023/FiberTemp/config"
@@ -24,7 +23,6 @@ func NewRouter() http.Handler {
 	mux := http.NewServeMux()
 
 	mux.HandleFunc("/AuthRepector/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("AAAAAA  ")
 		switch r.Method {
 		case "GET":
 			middlewareController.CheckAntiDDoS(
