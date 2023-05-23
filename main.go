@@ -19,6 +19,6 @@ func main() {
 	fmt.Println("Starting server on port " + portSystem + "...")
 
 	router := routers.NewRouter()
-
+	fmt.Println("Entrou 1")
 	log.Fatal(http.ListenAndServe(":"+portSystem, router))
 }
