@@ -2,37 +2,16 @@ package main
 
 import (
 	"fmt"
-	//	"log"
-	//	"net/http"
-	//	"os"
+	"log"
+	"net/http"
 
-	//	"github.com/RenanFerreira0023/FiberTemp/routers"
-
-	"github.com/gofiber/fiber/v2"
-	//	"github.com/joho/godotenv"
+	"rds_api_2/routers"
 )
 
-/*
-	func main2() {
-		err := godotenv.Load(".env") // Carrega as variáveis do arquivo .env
-		if err != nil {
-			log.Fatal("Erro ao carregar o arquivo .env:", err)
-		}
-		portSystem := os.Getenv("PORT_SYSTEM")
-		fmt.Println("Starting server on port " + portSystem + "...")
-
-		router := routers.NewRouter()
-
-		log.Fatal(http.ListenAndServe(":"+portSystem, router))
-	}
-*/
 func main() {
-	app := fiber.New()
+	fmt.Println("Starting server on port 8080...")
 
-	app.Get("/", func(c *fiber.Ctx) error {
-		fmt.Println("XXXX")
-		return c.SendString("Hello, World!")
-	})
+	router := routers.NewRouter()
 
-	app.Listen(":3000")
+	log.Fatal(http.ListenAndServe(":8080", router))
 }

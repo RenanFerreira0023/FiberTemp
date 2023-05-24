@@ -4,7 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/RenanFerreira0023/FiberTemp/models"
+	"rds_api_2/models"
 )
 
 type ReceptorRepository struct {

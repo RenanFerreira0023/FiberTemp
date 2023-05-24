@@ -8,7 +8,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/RenanFerreira0023/FiberTemp/models"
+	"rds_api_2/models"
 
 	"time"
 
