@@ -1,12 +1,13 @@
 package main
 
 import (
-	//	"fmt"
+	"fmt"
 	//	"log"
 	//	"net/http"
 	//	"os"
 
 	//	"github.com/RenanFerreira0023/FiberTemp/routers"
+
 	"github.com/gofiber/fiber/v2"
 	//	"github.com/joho/godotenv"
 )
@@ -29,6 +30,7 @@ func main() {
 	app := fiber.New()
 
 	app.Get("/", func(c *fiber.Ctx) error {
+		fmt.Println("XXXX")
 		return c.SendString("Hello, World!")
 	})
 
