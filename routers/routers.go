@@ -1,7 +1,6 @@
 package routers
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/RenanFerreira0023/FiberTemp/config"
@@ -22,7 +21,6 @@ func NewRouter() http.Handler {
 	receptorController := controllerReceptor.NewReceptorController(receptorRepository)
 
 	mux := http.NewServeMux()
-	fmt.Println(" Entrou 2 ")
 
 	mux.HandleFunc("/AuthRepector/", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
