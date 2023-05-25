@@ -8,9 +8,9 @@ import (
 	"strconv"
 	"time"
 
-	"rds_api_2/middleware"
-	"rds_api_2/models"
-	repositories "rds_api_2/repositories/receptor"
+	"github.com/RenanFerreira0023/FiberTemp/middleware"
+	"github.com/RenanFerreira0023/FiberTemp/models"
+	repositories "github.com/RenanFerreira0023/FiberTemp/repositories/receptor"
 )
 
 type ReceptorController struct {

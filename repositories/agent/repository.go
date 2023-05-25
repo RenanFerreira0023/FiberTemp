@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"strconv"
 
-	"rds_api_2/models"
+	"github.com/RenanFerreira0023/FiberTemp/models"
 )
 
 type AgentRepository struct {

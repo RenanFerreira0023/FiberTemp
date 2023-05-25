@@ -3,12 +3,12 @@ package routers
 import (
 	"net/http"
 
-	"rds_api_2/config"
-	controllerAgent "rds_api_2/controllers/agent"
-	middlewareController "rds_api_2/controllers/middleware"
-	controllerReceptor "rds_api_2/controllers/receptor"
-	repositoryAgent "rds_api_2/repositories/agent"
-	repositoryReceptor "rds_api_2/repositories/receptor"
+	"github.com/RenanFerreira0023/FiberTemp/config"
+	controllerAgent "github.com/RenanFerreira0023/FiberTemp/controllers/agent"
+	middlewareController "github.com/RenanFerreira0023/FiberTemp/controllers/middleware"
+	controllerReceptor "github.com/RenanFerreira0023/FiberTemp/controllers/receptor"
+	repositoryAgent "github.com/RenanFerreira0023/FiberTemp/repositories/agent"
+	repositoryReceptor "github.com/RenanFerreira0023/FiberTemp/repositories/receptor"
 )
 
 func NewRouter() http.Handler {

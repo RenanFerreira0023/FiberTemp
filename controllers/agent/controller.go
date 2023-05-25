@@ -8,10 +8,10 @@ import (
 	"strconv"
 	"time"
 
-	"rds_api_2/models"
+	"github.com/RenanFerreira0023/FiberTemp/models"
 
-	"rds_api_2/middleware"
-	repositories "rds_api_2/repositories/agent"
+	"github.com/RenanFerreira0023/FiberTemp/middleware"
+	repositories "github.com/RenanFerreira0023/FiberTemp/repositories/agent"
 )
 
 type AgentController struct {
