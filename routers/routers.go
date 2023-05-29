@@ -1,6 +1,7 @@
 package routers
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/RenanFerreira0023/FiberTemp/config"
@@ -142,6 +143,7 @@ func NewRouter() http.Handler {
 	})
 
 	mux.HandleFunc("/CreateChannel", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Println("777777777777777777777777777")
 		switch r.Method {
 		case "POST":
 			middlewareController.CheckAntiDDoS(

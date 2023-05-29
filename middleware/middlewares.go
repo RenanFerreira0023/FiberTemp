@@ -12,7 +12,7 @@ import (
 
 	"time"
 
-	"github.com/dgrijalva/jwt-go"
+	"github.com/golang-jwt/jwt/v5"
 )
 
 func CreateTokenHandler(next http.Handler) http.Handler {
