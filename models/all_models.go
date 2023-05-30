@@ -134,3 +134,9 @@ type QueryRequestReqCopy struct {
 	ReceptorID    int    `json:"users_receptor_id"`
 	ChannelID     int    `json:"channel_id"`
 }
+
+type QueryBodyInsertPermission struct {
+	ID             int `json:"id"`
+	UserReceptorID int `json:"user_receptor_id"`
+	ChannelID      int `json:"channel_id"`
+}

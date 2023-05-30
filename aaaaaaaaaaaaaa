@@ -1,0 +1,61 @@
+# syntax = docker/dockerfile:experimental 
+ # 
+ # STAGE 1: prepare 
+ # 
+ FROM 465802948822.dkr.ecr.sa-east-1.amazonaws.com/golang120:latest as prepare 
+  
+ WORKDIR /source 
+  
+ COPY go.mod go.sum config/.env ./ 
+  
+ RUN GOCACHE=OFF 
+  
+ RUN go env -w GOPRIVATE=github.com/asklisa/* 
+  
+ RUN apk add --no-cache ca-certificates git openssh-client 
+  
+ ARG BUILD_TYPE 
+ # 
+ # STAGE 2: build 
+ # 
+ FROM prepare AS build 
+  
+ COPY . . 
+  
+ RUN apk add --no-cache ca-certificates git openssh-client 
+  
+ ARG BUILD_TYPE 
+  
+ RUN echo "BUILD_TYPE = ${BUILD_TYPE}" 
+  
+ RUN --mount=type=ssh if [[ "$BUILD_TYPE" == "aws" ]] ; then  mkdir -p -m 0600 /root/.ssh \ 
+         && ssh-keyscan github.com >> /root/.ssh/known_hosts \ 
+         && git config --global url."ssh://git@github.com/".insteadOf "https://github.com/" \ 
+         && go env -w GOPRIVATE=github.com/asklisa/* \ 
+         && go mod vendor \ 
+         && go mod download ; \ 
+     fi 
+  
+ RUN CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -o bin/api -v cmd/api.go 
+  
+ # 
+ # STAGE 3: run 
+ # 
+ #FROM build as run 
+ FROM 465802948822.dkr.ecr.sa-east-1.amazonaws.com/alpine316:latest 
+  
+ RUN apk add -U tzdata 
+  
+ ENV TZ=America/Sao_Paulo 
+ RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone 
+  
+ RUN apk add --no-cache ca-certificates git openssh-client 
+  
+ COPY config/.env /source/config/.env 
+  
+ COPY --from=build /source/bin/api /api 
+ COPY --from=build /source/templates /templates 
+ COPY --from=build /source/static /static 
+  
+ EXPOSE 8080 
+ ENTRYPOINT ["/api"]

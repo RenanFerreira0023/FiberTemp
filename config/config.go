@@ -39,15 +39,15 @@ func NewDB() *sql.DB {
 	if err != nil {
 		panic(err)
 	}
-	CreateTables(db)
+
+	//	emailAdmin := os.Getenv("EMAIL_ADMIN_USER")
+	//	CreateTables(db, emailAdmin)
 	return db
 }
 
-// Renan D. Ferreira          <- Developer Expert
-// (+55) 41 - 99758 - 3713    <- Whatsapp
-
 // isso aqui precisa ir para o repository
-func CreateTables(db *sql.DB) {
+func CreateTables(db *sql.DB, emailAdmin string) {
+
 	createTableAgent := "CREATE TABLE IF NOT EXISTS users_agent (  id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,  first_name VARCHAR(200),  second_name VARCHAR(200),  email VARCHAR(150),  dt_create_account DATETIME,  dt_expired_account DATETIME,  account_valid BOOLEAN,  quantity_alerts INT(100),  quantity_account_copy INT(100))"
 	_, errTbAgent := db.Exec(createTableAgent)
 	if errTbAgent != nil {
@@ -91,5 +91,5 @@ func CreateTables(db *sql.DB) {
 		fmt.Println("errInsertAdminAgent    ", errInsertAdminAgent.Error())
 		panic(errInsertAdminAgent)
 	}
-	fmt.Println("XXXXX")
+
 }

@@ -16,6 +16,36 @@ func NewAgentRepository(db *sql.DB) *AgentRepository {
 	return &AgentRepository{db: db}
 }
 
+func (r *AgentRepository) InsertPermissionChannel(bodyChannel models.QueryBodyInsertPermission) (int, error) {
+
+	idPermission, errPermission := r.checkExistPermission(bodyChannel)
+	if errPermission == nil {
+		return idPermission, fmt.Errorf("Canal ja existe ", idPermission)
+	}
+
+	var receptorID = bodyChannel.ChannelID
+	var channelID = bodyChannel.ChannelID
+	request, err := r.db.Exec("INSERT INTO permission (user_receptor_id, channel_id) VALUES (?, ?)",
+		receptorID, channelID)
+	if err != nil {
+		return 0, fmt.Errorf("Erro ao inserir um canal no banco de dados  ", err.Error())
+	}
+	insertID, err := request.LastInsertId()
+	if err != nil {
+		panic(err.Error())
+	}
+	return int(insertID), nil
+}
+func (r *AgentRepository) checkExistPermission(bodyChannel models.QueryBodyInsertPermission) (int, error) {
+
+	var idUser int
+	err := r.db.QueryRow("SELECT id FROM permission WHERE user_receptor_id = ? AND channel_id = ? ", bodyChannel.UserReceptorID, bodyChannel.ChannelID).Scan(&idUser)
+	if err != nil {
+		return 0, fmt.Errorf(err.Error())
+	}
+	return idUser, nil
+}
+
 func (r *AgentRepository) checkExistCopy(ticketCheck int, entryCheck string) (int, error) {
 	var idUser int
 	err := r.db.QueryRow("SELECT id FROM all_copy WHERE ticket = ? AND dt_send_order = ?", ticketCheck, entryCheck).Scan(&idUser)

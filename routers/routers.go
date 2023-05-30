@@ -189,5 +189,21 @@ func NewRouter() http.Handler {
 		}
 	})
 
+	mux.HandleFunc("/InsertPermissionChannel", func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case "POST":
+			middlewareController.CheckAntiDDoS(
+				middlewareController.CheckValidToken(
+					agentController.InsertPermissionChannel(
+						http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+						})))).ServeHTTP(w, r)
+
+		default:
+			w.WriteHeader(http.StatusMethodNotAllowed)
+
+		}
+	})
+
 	return mux
 }

@@ -22,6 +22,25 @@ func NewAgentController(repository *repositories.AgentRepository) *AgentControll
 	return &AgentController{repository: repository}
 }
 
+func (a *AgentController) InsertPermissionChannel(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var bodyPermission models.QueryBodyInsertPermission
+		if err := json.NewDecoder(r.Body).Decode(&bodyPermission); err != nil {
+			http.Error(w, middleware.ConvertStructError(err.Error()), http.StatusBadRequest)
+			return
+		}
+
+		idChannel, err := a.repository.InsertPermissionChannel(bodyPermission)
+		if err != nil {
+			http.Error(w, middleware.ConvertStructError(err.Error()), http.StatusBadRequest)
+			return
+		}
+
+		fmt.Println("Canal inserido com sucesso ! ", idChannel)
+
+	})
+}
+
 func (a *AgentController) SendCopy(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// recupera tudo do body
@@ -86,20 +105,17 @@ func (a *AgentController) SendCopy(next http.Handler) http.Handler {
 
 func (a *AgentController) CreateChannel(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		fmt.Println("AAAAAAAAAAAAAAAAAAAAA")
 		var channelBody models.QueryBodyCreateChannel
 		if err := json.NewDecoder(r.Body).Decode(&channelBody); err != nil {
 			http.Error(w, middleware.ConvertStructError(err.Error()), http.StatusBadRequest)
 			return
 		}
-		fmt.Println("bbbbbbbbbbbbb")
 
 		requestChannelName := a.checkDatas("", channelBody.NameChannel)
 		if requestChannelName != "" {
 			http.Error(w, middleware.ConvertStructError("Nome do canal \n"+requestChannelName), http.StatusBadRequest)
 			return
 		}
-		fmt.Println("cccccccccccccc")
 
 		requestAgentID := a.checkDatas("", strconv.Itoa(channelBody.AgentID))
 		if requestAgentID != "" {
@@ -107,14 +123,11 @@ func (a *AgentController) CreateChannel(next http.Handler) http.Handler {
 			return
 		}
 
-		fmt.Println("dddddddddddddd")
-
 		requestDtCreateChannel := a.checkDatas("datetime", channelBody.CreateChannel)
 		if requestDtCreateChannel != "" {
 			http.Error(w, middleware.ConvertStructError("Data Criação do canal \n"+requestDtCreateChannel), http.StatusBadRequest)
 			return
 		}
-		fmt.Println("eeeeeeeeeeeeeeeeeee")
 
 		idChannel, err := a.repository.InsertChannel(channelBody)
 		if err != nil {
