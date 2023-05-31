@@ -8,6 +8,8 @@ import (
 	"strconv"
 	"time"
 
+	middlewareController "github.com/RenanFerreira0023/FiberTemp/controllers/middleware"
+
 	"github.com/RenanFerreira0023/FiberTemp/models"
 
 	"github.com/RenanFerreira0023/FiberTemp/middleware"
@@ -282,7 +284,10 @@ func (a *AgentController) CheckUserExist(next http.Handler) http.Handler {
 			http.Error(w, middleware.ConvertStructError("Conta Desativada, Envie um e-mail imediato para appsskilldeveloper@gmail.com para regularizar sua situação"), http.StatusForbidden)
 			return
 		}
-		next.ServeHTTP(w, r)
+
+		middlewareController.CreateAuthMiddleware(agent[0].ID, next).ServeHTTP(w, r)
+
+		//		next.ServeHTTP(w, r)
 	})
 }
 

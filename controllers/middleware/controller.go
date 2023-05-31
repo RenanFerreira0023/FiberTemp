@@ -9,8 +9,8 @@ import (
 	"github.com/RenanFerreira0023/FiberTemp/models"
 )
 
-func CreateAuthMiddleware(next http.Handler) http.Handler {
-	return (middleware.CreateTokenHandler(next))
+func CreateAuthMiddleware(ID int, next http.Handler) http.Handler {
+	return (middleware.CreateTokenHandler(ID, next))
 }
 
 func CheckValidToken(next http.Handler) http.Handler {

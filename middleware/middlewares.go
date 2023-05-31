@@ -8,14 +8,14 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/RenanFerreira0023/FiberTemp/models"
-
 	"time"
+
+	"github.com/RenanFerreira0023/FiberTemp/models"
 
 	"github.com/golang-jwt/jwt/v5"
 )
 
-func CreateTokenHandler(next http.Handler) http.Handler {
+func CreateTokenHandler(ID int, next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// Cria um token JWT com a chave secreta
 		token := jwt.New(jwt.SigningMethodHS256)
@@ -29,10 +29,15 @@ func CreateTokenHandler(next http.Handler) http.Handler {
 			http.Error(w, "Erro ao criar o token", http.StatusInternalServerError)
 			return
 		}
-		// Adiciona o token como um cabeçalho HTTP
-		//	w.Header().Set("Authorization", fmt.Sprintf("Bearer %s", tokenString))
-		w.Write([]byte(tokenString))
-		// Chama o próximo handler na cadeia
+		var queryRequestToken models.QueryRequestToken
+		queryRequestToken.UserID = ID
+		queryRequestToken.Token = tokenString
+
+		jsonResponse, err := json.Marshal(queryRequestToken)
+		if err != nil {
+			http.Error(w, ("Trasnformação de json invalido"), http.StatusInternalServerError)
+		}
+		w.Write([]byte(jsonResponse))
 		next.ServeHTTP(w, r)
 	})
 }

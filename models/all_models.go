@@ -140,3 +140,8 @@ type QueryBodyInsertPermission struct {
 	UserReceptorID int `json:"user_receptor_id"`
 	ChannelID      int `json:"channel_id"`
 }
+
+type QueryRequestToken struct {
+	UserID int    `json:"id"`
+	Token  string `json:"token"`
+}

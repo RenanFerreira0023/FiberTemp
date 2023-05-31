@@ -29,10 +29,10 @@ func NewRouter() http.Handler {
 			middlewareController.CheckAntiDDoS(
 				receptorController.CheckURLDatas(
 					receptorController.CheckUserExist(
-						middlewareController.CreateAuthMiddleware(
-							http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+						//middlewareController.CreateAuthMiddleware(
+						http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-							}))))).ServeHTTP(w, r)
+						})))).ServeHTTP(w, r)
 		default:
 			w.WriteHeader(http.StatusMethodNotAllowed)
 		}
@@ -118,10 +118,10 @@ func NewRouter() http.Handler {
 			middlewareController.CheckAntiDDoS(
 				agentController.CheckURLDatas(
 					agentController.CheckUserExist(
-						middlewareController.CreateAuthMiddleware(
-							http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+						//		middlewareController.CreateAuthMiddleware(
+						http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-							}))))).ServeHTTP(w, r)
+						})))).ServeHTTP(w, r)
 		default:
 			w.WriteHeader(http.StatusMethodNotAllowed)
 		}

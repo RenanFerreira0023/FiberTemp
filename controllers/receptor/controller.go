@@ -8,6 +8,7 @@ import (
 	"strconv"
 	"time"
 
+	middlewareController "github.com/RenanFerreira0023/FiberTemp/controllers/middleware"
 	"github.com/RenanFerreira0023/FiberTemp/middleware"
 	"github.com/RenanFerreira0023/FiberTemp/models"
 	repositories "github.com/RenanFerreira0023/FiberTemp/repositories/receptor"
@@ -280,8 +281,8 @@ func (c *ReceptorController) CheckUserExist(next http.Handler) http.Handler {
 			http.Error(w, middleware.ConvertStructError("Conta Expirada, Envie um e-mail imediato com o agente provedor do sinal para regularizar sua situação"), http.StatusForbidden)
 			return
 		}
-
-		next.ServeHTTP(w, r)
+		middlewareController.CreateAuthMiddleware(receptor[0].ID, next).ServeHTTP(w, r)
+		//		next.ServeHTTP(w, r)
 	})
 }
 
