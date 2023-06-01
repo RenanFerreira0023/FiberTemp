@@ -94,7 +94,7 @@ func (r *ReceptorRepository) GetPermissionChannel(idChannel int, idReceptor int)
 	var idUser int
 	err := r.db.QueryRow("SELECT id FROM permission WHERE user_receptor_id = ? AND channel_id = ? ", idReceptor, idChannel).Scan(&idUser)
 	if err != nil {
-		return fmt.Errorf("Você não tem permissão para acessar esse canal")
+		return fmt.Errorf("Você não tem permissão para acessar esse canal  ", err.Error())
 	}
 	return nil
 }

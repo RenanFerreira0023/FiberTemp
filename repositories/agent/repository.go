@@ -23,7 +23,7 @@ func (r *AgentRepository) InsertPermissionChannel(bodyChannel models.QueryBodyIn
 		return idPermission, fmt.Errorf("Canal ja existe ", idPermission)
 	}
 
-	var receptorID = bodyChannel.ChannelID
+	var receptorID = bodyChannel.UserReceptorID
 	var channelID = bodyChannel.ChannelID
 	request, err := r.db.Exec("INSERT INTO permission (user_receptor_id, channel_id) VALUES (?, ?)",
 		receptorID, channelID)
