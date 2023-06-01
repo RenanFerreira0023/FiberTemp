@@ -22,6 +22,20 @@ func NewRouter() http.Handler {
 
 	mux := http.NewServeMux()
 
+	mux.HandleFunc("/Health", func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case "GET":
+			middlewareController.CheckAntiDDoS(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+			})).ServeHTTP(w, r)
+		default:
+			middlewareController.CheckAntiDDoS(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				http.Error(w, middlewareController.ConvertStructError(http.StatusText(http.StatusMethodNotAllowed)), http.StatusBadRequest)
+			})).ServeHTTP(w, r)
+
+		}
+	})
+
 	mux.HandleFunc("/Repector/Auth/", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case "GET":
