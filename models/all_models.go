@@ -4,10 +4,6 @@ import "time"
 
 var LayoutDate = "2006-01-02 15:04:05"
 
-type IsValid struct {
-	Valid bool `json:"is_valid"`
-}
-
 type MiddlewareStruct struct {
 	NumRequests int
 	LastRequest time.Time
@@ -40,13 +36,6 @@ type QueryBodyUsersAgent struct {
 }
 
 type QueryBodyCreateChannel struct {
-	NameChannel   string `json:"channel_name"`
-	AgentID       int    `json:"users_agent_id"`
-	CreateChannel string `json:"dt_create_channel"`
-}
-
-type QueryBodyGetChannel struct {
-	ID            int    `json:"id"`
 	NameChannel   string `json:"channel_name"`
 	AgentID       int    `json:"users_agent_id"`
 	CreateChannel string `json:"dt_create_channel"`

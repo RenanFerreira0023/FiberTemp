@@ -37,9 +37,6 @@ func (r *ReceptorRepository) InsertReqCopy(bodyReqCopy models.QueryRequestReqCop
 }
 
 func (r *ReceptorRepository) CheckReqCopy(idChannel int, idReceptor int, idAllCopy int, dateSendOrder string) error {
-	fmt.Println("\n\n idChannel    ", idChannel)
-	fmt.Println(" idReceptor    ", idReceptor)
-	fmt.Println(" idAllCopy    ", idAllCopy)
 	var idUser int
 	err := r.db.QueryRow("SELECT id FROM req_copy WHERE channel_id = ? AND users_receptor_id = ? AND all_copy_id = ? ;", idChannel, idReceptor, idAllCopy).Scan(&idUser)
 	if err == nil {

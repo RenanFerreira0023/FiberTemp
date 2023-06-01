@@ -121,7 +121,7 @@ func AntiDDoS(next http.Handler) http.Handler {
 		} else {
 			clients[ip].NumRequests++
 			duration := time.Since(clients[ip].LastRequest)
-			if duration < 1*time.Second && clients[ip].NumRequests > 10 {
+			if duration < 1*time.Second && clients[ip].NumRequests > 200 {
 				http.Error(w, ConvertStructError("Too many requests"), http.StatusTooManyRequests)
 				mutex.Unlock()
 				return

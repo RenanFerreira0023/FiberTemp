@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-
+	"regexp"
 	"strconv"
 	"time"
 
@@ -28,6 +28,12 @@ func (c *ReceptorController) SendReqCopy(next http.Handler) http.Handler {
 		var reqCopyBody models.QueryRequestReqCopy
 		if err := json.NewDecoder(r.Body).Decode(&reqCopyBody); err != nil {
 			http.Error(w, middleware.ConvertStructError(err.Error()), http.StatusBadRequest)
+			return
+		}
+
+		requestDateSendOrder := c.checkDatas("datetime", reqCopyBody.DateSendOrder)
+		if requestDateSendOrder != "" {
+			http.Error(w, middleware.ConvertStructError("Data resposta da copy \n"+requestDateSendOrder), http.StatusBadRequest)
 			return
 		}
 
@@ -204,26 +210,66 @@ func (c *ReceptorController) GetLoginReceptor(next http.Handler) http.Handler {
 
 func (c *ReceptorController) CheckURLDatas(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
-		params := r.URL.Query()
-
-		// Percorra cada parâmetro e valide
-		for key, values := range params {
-			for _, value := range values {
-				if !middlewareController.IsValidInput(key, value) {
-					http.Error(w, fmt.Sprintf("Valor inválido para o parâmetro '%s': %s", key, value), http.StatusBadRequest)
-					return
-				}
-			}
+		loginValue := r.URL.Query().Get("login")
+		datasLogin := c.checkDatas("email", loginValue)
+		if datasLogin != "" && loginValue != "" {
+			http.Error(w, "Dados da URL inválidos [ login ] ", http.StatusInternalServerError)
+			return
 		}
-		next.ServeHTTP(w, r)
 
+		emailAgentValue := r.URL.Query().Get("emailAgent")
+		emailAgent := c.checkDatas("email", emailAgentValue)
+		if emailAgent != "" && emailAgentValue != "" {
+			http.Error(w, "Dados da URL inválidos [ emailAgent ] ", http.StatusInternalServerError)
+			return
+		}
+
+		startDateStr := r.URL.Query().Get("start_date")
+		dateStart := c.checkDatas("datetime", startDateStr)
+		if dateStart != "" && startDateStr != "" {
+			http.Error(w, "Dados da URL inválidos [ start_date ]", http.StatusBadRequest)
+			return
+		}
+
+		endDateStr := r.URL.Query().Get("end_date")
+		dateEnd := c.checkDatas("datetime", endDateStr)
+		if dateEnd != "" && endDateStr != "" {
+			http.Error(w, "Dados da URL inválidos [ end_date ]", http.StatusBadRequest)
+			return
+		}
+
+		next.ServeHTTP(w, r)
 	})
 }
+
+func (c *ReceptorController) checkDatas(typeValid string, data string) string {
+	if len(data) > 200 {
+		return "Muitos caracteres na requisição"
+	}
+	if typeValid == "email" {
+		regex := regexp.MustCompile(`^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$`)
+		if !regex.MatchString(data) {
+			return "Formato do e-mail inválido"
+		}
+	}
+	if typeValid == "datetime" {
+		_, err := time.Parse(models.LayoutDate, data)
+		if err != nil {
+			return ("A string não está no formato de data correto.")
+		}
+	}
+	return ""
+}
+
 func (c *ReceptorController) CheckUserExist(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 		loginValue := r.URL.Query().Get("login")
+		datasLogin := c.checkDatas("email", loginValue)
+		if datasLogin != "" {
+			http.Error(w, "Dados da URL inválidos", http.StatusBadRequest)
+			return
+		}
 
 		receptor, err := c.repository.GetisValidLogin(loginValue)
 		if err != nil {
@@ -246,6 +292,36 @@ func (c *ReceptorController) InsertReceptor(next http.Handler) http.Handler {
 		var receptorBody models.QueryGetUserReceptor
 		if err := json.NewDecoder(r.Body).Decode(&receptorBody); err != nil {
 			http.Error(w, middleware.ConvertStructError(err.Error()), http.StatusBadRequest)
+			return
+		}
+		//		fmt.Printf("Dados do Body: %+v\n", copyBody)
+		requestFirstName := c.checkDatas("", receptorBody.FirstName)
+		if requestFirstName != "" {
+			http.Error(w, middleware.ConvertStructError("Primeiro nome \n"+requestFirstName), http.StatusBadRequest)
+			return
+		}
+
+		requestSecondName := c.checkDatas("", receptorBody.SecondName)
+		if requestSecondName != "" {
+			http.Error(w, middleware.ConvertStructError("Segundo nome \n"+requestSecondName), http.StatusBadRequest)
+			return
+		}
+
+		requestEmail := c.checkDatas("email", receptorBody.Email)
+		if requestEmail != "" {
+			http.Error(w, middleware.ConvertStructError("Email \n"+requestEmail), http.StatusBadRequest)
+			return
+		}
+
+		requestDtCreateAccount := c.checkDatas("datetime", receptorBody.CreateAccount)
+		if requestDtCreateAccount != "" {
+			http.Error(w, middleware.ConvertStructError("Data Criação \n"+requestDtCreateAccount), http.StatusBadRequest)
+			return
+		}
+
+		requestDtExpiredAccount := c.checkDatas("datetime", receptorBody.ExpiredAccount)
+		if requestDtExpiredAccount != "" {
+			http.Error(w, middleware.ConvertStructError("Data Expiração \n"+requestDtExpiredAccount), http.StatusBadRequest)
 			return
 		}
 
