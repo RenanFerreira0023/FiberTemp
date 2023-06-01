@@ -104,32 +104,26 @@ func ConvertStructError(message string) string {
 	return string(jsonResponse)
 }
 
-var clients = make(map[string]*models.MiddlewareStruct)
-var mutex = &sync.Mutex{}
+var clients sync.Map
 
 func AntiDDoS(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		ip := r.RemoteAddr
 
-		mutex.Lock()
+		value, _ := clients.LoadOrStore(ip, &models.MiddlewareStruct{
+			NumRequests: 1,
+			LastRequest: time.Now(),
+		})
+		client := value.(*models.MiddlewareStruct)
 
-		if clients[ip] == nil {
-			clients[ip] = &models.MiddlewareStruct{
-				NumRequests: 1,
-				LastRequest: time.Now(),
-			}
-		} else {
-			clients[ip].NumRequests++
-			duration := time.Since(clients[ip].LastRequest)
-			if duration < 1*time.Second && clients[ip].NumRequests > 200 {
-				http.Error(w, ConvertStructError("Too many requests"), http.StatusTooManyRequests)
-				mutex.Unlock()
-				return
-			}
-			clients[ip].LastRequest = time.Now()
+		client.NumRequests++
+		duration := time.Since(client.LastRequest)
+		if duration < 1*time.Second && client.NumRequests > 200 {
+			http.Error(w, ConvertStructError("Too many requests"), http.StatusTooManyRequests)
+			return
 		}
 
-		mutex.Unlock()
+		client.LastRequest = time.Now()
 
 		next.ServeHTTP(w, r)
 	})

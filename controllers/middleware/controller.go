@@ -57,7 +57,7 @@ func IsValidInput(key, value string) bool {
 	case "emailAgent":
 		return IsValidEmail(value)
 	case "channel":
-		return IsValidString(value)
+		return IsValidTag(value)
 	case "name":
 		return IsValidString(value)
 	case "email":

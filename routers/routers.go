@@ -33,7 +33,10 @@ func NewRouter() http.Handler {
 
 						})))).ServeHTTP(w, r)
 		default:
-			w.WriteHeader(http.StatusMethodNotAllowed)
+			middlewareController.CheckAntiDDoS(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				http.Error(w, middlewareController.ConvertStructError(http.StatusText(http.StatusMethodNotAllowed)), http.StatusBadRequest)
+			})).ServeHTTP(w, r)
+
 		}
 	})
 
@@ -48,7 +51,10 @@ func NewRouter() http.Handler {
 						})))).ServeHTTP(w, r)
 
 		default:
-			w.WriteHeader(http.StatusMethodNotAllowed)
+			middlewareController.CheckAntiDDoS(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				http.Error(w, middlewareController.ConvertStructError(http.StatusText(http.StatusMethodNotAllowed)), http.StatusBadRequest)
+			})).ServeHTTP(w, r)
+
 		}
 	})
 
@@ -63,7 +69,10 @@ func NewRouter() http.Handler {
 
 							}))))).ServeHTTP(w, r)
 		default:
-			w.WriteHeader(http.StatusMethodNotAllowed)
+			middlewareController.CheckAntiDDoS(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				http.Error(w, middlewareController.ConvertStructError(http.StatusText(http.StatusMethodNotAllowed)), http.StatusBadRequest)
+			})).ServeHTTP(w, r)
+
 		}
 	})
 
@@ -77,9 +86,10 @@ func NewRouter() http.Handler {
 							http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 							}))))).ServeHTTP(w, r)
-
 		default:
-			w.WriteHeader(http.StatusMethodNotAllowed)
+			middlewareController.CheckAntiDDoS(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				http.Error(w, middlewareController.ConvertStructError(http.StatusText(http.StatusMethodNotAllowed)), http.StatusBadRequest)
+			})).ServeHTTP(w, r)
 
 		}
 	})
@@ -96,7 +106,9 @@ func NewRouter() http.Handler {
 						})))).ServeHTTP(w, r)
 
 		default:
-			w.WriteHeader(http.StatusMethodNotAllowed)
+			middlewareController.CheckAntiDDoS(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				http.Error(w, middlewareController.ConvertStructError(http.StatusText(http.StatusMethodNotAllowed)), http.StatusBadRequest)
+			})).ServeHTTP(w, r)
 
 		}
 	})
@@ -122,7 +134,10 @@ func NewRouter() http.Handler {
 
 						})))).ServeHTTP(w, r)
 		default:
-			w.WriteHeader(http.StatusMethodNotAllowed)
+			middlewareController.CheckAntiDDoS(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				http.Error(w, middlewareController.ConvertStructError(http.StatusText(http.StatusMethodNotAllowed)), http.StatusBadRequest)
+			})).ServeHTTP(w, r)
+
 		}
 	})
 
@@ -137,7 +152,10 @@ func NewRouter() http.Handler {
 						})))).ServeHTTP(w, r)
 
 		default:
-			w.WriteHeader(http.StatusMethodNotAllowed)
+			middlewareController.CheckAntiDDoS(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				http.Error(w, middlewareController.ConvertStructError(http.StatusText(http.StatusMethodNotAllowed)), http.StatusBadRequest)
+			})).ServeHTTP(w, r)
+
 		}
 	})
 
@@ -152,7 +170,10 @@ func NewRouter() http.Handler {
 						})))).ServeHTTP(w, r)
 
 		default:
-			w.WriteHeader(http.StatusMethodNotAllowed)
+			middlewareController.CheckAntiDDoS(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				http.Error(w, middlewareController.ConvertStructError(http.StatusText(http.StatusMethodNotAllowed)), http.StatusBadRequest)
+			})).ServeHTTP(w, r)
+
 		}
 	})
 
@@ -167,7 +188,10 @@ func NewRouter() http.Handler {
 
 							}))))).ServeHTTP(w, r)
 		default:
-			w.WriteHeader(http.StatusMethodNotAllowed)
+			middlewareController.CheckAntiDDoS(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				http.Error(w, middlewareController.ConvertStructError(http.StatusText(http.StatusMethodNotAllowed)), http.StatusBadRequest)
+			})).ServeHTTP(w, r)
+
 		}
 	})
 
@@ -182,7 +206,9 @@ func NewRouter() http.Handler {
 						})))).ServeHTTP(w, r)
 
 		default:
-			w.WriteHeader(http.StatusMethodNotAllowed)
+			middlewareController.CheckAntiDDoS(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				http.Error(w, middlewareController.ConvertStructError(http.StatusText(http.StatusMethodNotAllowed)), http.StatusBadRequest)
+			})).ServeHTTP(w, r)
 
 		}
 	})
@@ -198,9 +224,17 @@ func NewRouter() http.Handler {
 						})))).ServeHTTP(w, r)
 
 		default:
-			w.WriteHeader(http.StatusMethodNotAllowed)
+			middlewareController.CheckAntiDDoS(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				http.Error(w, middlewareController.ConvertStructError(http.StatusText(http.StatusMethodNotAllowed)), http.StatusBadRequest)
+			})).ServeHTTP(w, r)
 
 		}
+	})
+
+	mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		middlewareController.CheckAntiDDoS(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			http.Error(w, middlewareController.ConvertStructError(http.StatusText(http.StatusMethodNotAllowed)), http.StatusBadRequest)
+		})).ServeHTTP(w, r)
 	})
 
 	return mux

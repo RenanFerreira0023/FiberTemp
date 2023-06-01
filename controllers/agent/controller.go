@@ -129,7 +129,7 @@ func (a *AgentController) CreateChannel(next http.Handler) http.Handler {
 			return
 		}
 
-		if !middlewareController.IsValidInput("name", (channelBody.NameChannel)) {
+		if !middlewareController.IsValidInput("tag", (channelBody.NameChannel)) {
 			http.Error(w, middlewareController.ConvertStructError(fmt.Sprintf("Valor inválido para o parâmetro '%s': %s", "name", fmt.Sprint(channelBody.NameChannel))), http.StatusBadRequest)
 			return
 		}
