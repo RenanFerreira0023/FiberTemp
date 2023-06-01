@@ -12,7 +12,7 @@ import (
 	"time"
 
 	"github.com/RenanFerreira0023/FiberTemp/models"
-	"github.com/RenanFerreira0023/FiberTemp/vendor/github.com/joho/godotenv"
+	"github.com/joho/godotenv"
 
 	"github.com/golang-jwt/jwt/v5"
 )
