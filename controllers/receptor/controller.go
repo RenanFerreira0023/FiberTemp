@@ -31,6 +31,26 @@ func (c *ReceptorController) SendReqCopy(next http.Handler) http.Handler {
 			return
 		}
 
+		if !middlewareController.IsValidInput("number", fmt.Sprint(reqCopyBody.AllCopyID)) {
+			http.Error(w, middlewareController.ConvertStructError(fmt.Sprintf("Valor inválido para o parâmetro '%s': %s", "number", fmt.Sprint(reqCopyBody.AllCopyID))), http.StatusBadRequest)
+			return
+		}
+
+		if !middlewareController.IsValidInput("number", fmt.Sprint(reqCopyBody.ReceptorID)) {
+			http.Error(w, middlewareController.ConvertStructError(fmt.Sprintf("Valor inválido para o parâmetro '%s': %s", "number", fmt.Sprint(reqCopyBody.ReceptorID))), http.StatusBadRequest)
+			return
+		}
+
+		if !middlewareController.IsValidInput("number", fmt.Sprint(reqCopyBody.ChannelID)) {
+			http.Error(w, middlewareController.ConvertStructError(fmt.Sprintf("Valor inválido para o parâmetro '%s': %s", "number", fmt.Sprint(reqCopyBody.ChannelID))), http.StatusBadRequest)
+			return
+		}
+
+		if !middlewareController.IsValidInput("date", fmt.Sprint(reqCopyBody.DateSendOrder)) {
+			http.Error(w, middlewareController.ConvertStructError(fmt.Sprintf("Valor inválido para o parâmetro '%s': %s", "date", reqCopyBody.DateSendOrder)), http.StatusBadRequest)
+			return
+		}
+
 		requestInsert, err := c.repository.InsertReqCopy(reqCopyBody)
 		if err != nil {
 			http.Error(w, middleware.ConvertStructError(err.Error()), http.StatusInternalServerError)
@@ -211,7 +231,7 @@ func (c *ReceptorController) CheckURLDatas(next http.Handler) http.Handler {
 		for key, values := range params {
 			for _, value := range values {
 				if !middlewareController.IsValidInput(key, value) {
-					http.Error(w, fmt.Sprintf("Valor inválido para o parâmetro '%s': %s", key, value), http.StatusBadRequest)
+					http.Error(w, middlewareController.ConvertStructError(fmt.Sprintf("Valor inválido para o parâmetro '%s': %s", key, value)), http.StatusBadRequest)
 					return
 				}
 			}
@@ -246,6 +266,31 @@ func (c *ReceptorController) InsertReceptor(next http.Handler) http.Handler {
 		var receptorBody models.QueryGetUserReceptor
 		if err := json.NewDecoder(r.Body).Decode(&receptorBody); err != nil {
 			http.Error(w, middleware.ConvertStructError(err.Error()), http.StatusBadRequest)
+			return
+		}
+
+		if !middlewareController.IsValidInput("name", receptorBody.FirstName) {
+			http.Error(w, middlewareController.ConvertStructError(fmt.Sprintf("Valor inválido para o parâmetro '%s': %s", "name", receptorBody.FirstName)), http.StatusBadRequest)
+			return
+		}
+
+		if !middlewareController.IsValidInput("name", receptorBody.SecondName) {
+			http.Error(w, middlewareController.ConvertStructError(fmt.Sprintf("Valor inválido para o parâmetro '%s': %s", "name", receptorBody.SecondName)), http.StatusBadRequest)
+			return
+		}
+
+		if !middlewareController.IsValidInput("email", receptorBody.Email) {
+			http.Error(w, middlewareController.ConvertStructError(fmt.Sprintf("Valor inválido para o parâmetro '%s': %s", "email", receptorBody.Email)), http.StatusBadRequest)
+			return
+		}
+
+		if !middlewareController.IsValidInput("date", receptorBody.CreateAccount) {
+			http.Error(w, middlewareController.ConvertStructError(fmt.Sprintf("Valor inválido para o parâmetro '%s': %s", "date", receptorBody.CreateAccount)), http.StatusBadRequest)
+			return
+		}
+
+		if !middlewareController.IsValidInput("date", receptorBody.ExpiredAccount) {
+			http.Error(w, middlewareController.ConvertStructError(fmt.Sprintf("Valor inválido para o parâmetro '%s': %s", "date", receptorBody.ExpiredAccount)), http.StatusBadRequest)
 			return
 		}
 

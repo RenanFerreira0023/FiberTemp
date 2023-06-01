@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"regexp"
+	"strconv"
 
 	"github.com/RenanFerreira0023/FiberTemp/middleware"
 	"github.com/RenanFerreira0023/FiberTemp/models"
@@ -38,40 +39,57 @@ func IsValidInput(key, value string) bool {
 	// Aqui você pode adicionar as validações adequadas para cada tipo de dado
 	switch key {
 	case "id_agent":
-		return isValidNumber(value)
+		return IsValidNumber(value)
 	case "id_channel":
-		return isValidNumber(value)
+		return IsValidNumber(value)
 	case "id_receptor":
-		return isValidNumber(value)
+		return IsValidNumber(value)
 	case "end_date":
-		return isValidDateTime(value)
+		return IsValidDateTime(value)
 	case "start_date":
-		return isValidDateTime(value)
+		return IsValidDateTime(value)
 	case "page":
-		return isValidNumber(value)
+		return IsValidNumber(value)
 	case "limit":
-		return isValidNumber(value)
+		return IsValidNumber(value)
 	case "login":
-		return isValidEmail(value)
+		return IsValidEmail(value)
 	case "emailAgent":
-		return isValidEmail(value)
+		return IsValidEmail(value)
 	case "channel":
-		return isValidString(value)
+		return IsValidString(value)
+	case "name":
+		return IsValidString(value)
+	case "email":
+		return IsValidEmail(value)
+	case "date":
+		return IsValidDateTime(value)
+	case "number":
+		return IsValidNumber(value)
+	case "bool":
+		return IsValidBoolean(value)
+	case "tag":
+		return IsValidTag(value)
+
 	default:
-		return false // Parâmetro desconhecido, considerado válido
+		return true // Parâmetro desconhecido, considerado válido
 	}
 }
 
-func isValidNumber(value string) bool {
+func IsValidNumber(value string) bool {
 	if len(value) > 20 {
 		return false
 	}
-	// Verifica se o valor é um número
-	regex := regexp.MustCompile(`^-?\d+$`)
+	_, err := strconv.Atoi(value)
+	if err == nil {
+		return true // É um número inteiro válido
+	}
+
+	regex := regexp.MustCompile(`^-?\d+(\.\d+)?$`)
 	return regex.MatchString(value)
 }
 
-func isValidDateTime(value string) bool {
+func IsValidDateTime(value string) bool {
 	if len(value) > 20 {
 		return false
 	}
@@ -80,7 +98,7 @@ func isValidDateTime(value string) bool {
 	return regex.MatchString(value)
 }
 
-func isValidEmail(value string) bool {
+func IsValidEmail(value string) bool {
 	// Verifica se o valor é um email válido
 
 	if len(value) > 50 {
@@ -90,11 +108,25 @@ func isValidEmail(value string) bool {
 	return regex.MatchString(value)
 }
 
-func isValidString(value string) bool {
+func IsValidString(value string) bool {
 	// Verifica se o valor é uma string sem caracteres especiais
 	if len(value) > 50 {
 		return false
 	}
 	regex := regexp.MustCompile(`^[a-zA-Z0-9\s]+$`)
 	return regex.MatchString(value)
+}
+
+func IsValidTag(value string) bool {
+	// Verifica se o valor é uma string sem caracteres especiais
+	if len(value) > 50 {
+		return false
+	}
+	regex := regexp.MustCompile(`^[a-zA-Z0-9_\s]+$`)
+	return regex.MatchString(value)
+}
+
+func IsValidBoolean(value string) bool {
+	_, err := strconv.ParseBool(value)
+	return err == nil
 }
