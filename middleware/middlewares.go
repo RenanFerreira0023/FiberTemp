@@ -5,26 +5,34 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 	"strings"
 	"sync"
 
 	"time"
 
 	"github.com/RenanFerreira0023/FiberTemp/models"
+	"github.com/RenanFerreira0023/FiberTemp/vendor/github.com/joho/godotenv"
 
 	"github.com/golang-jwt/jwt/v5"
 )
 
 func CreateTokenHandler(ID int, next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+		errEnv := godotenv.Load()
+		if errEnv != nil {
+			fmt.Println("Error loading .env file  ", errEnv.Error())
+		}
+		SECRET_KEY := os.Getenv("SECRET_KEY_TOKEN")
 		// Cria um token JWT com a chave secreta
 		token := jwt.New(jwt.SigningMethodHS256)
 		// Define os claims do token
 		claims := token.Claims.(jwt.MapClaims)
-		claims["username"] = "RenanDutra"
+		claims["username"] = "RDSTDR"
 		claims["exp"] = time.Now().Add(time.Hour * 24).Unix()
 		// Assina o token com a chave secreta
-		tokenString, err := token.SignedString([]byte("my-secret-key"))
+		tokenString, err := token.SignedString([]byte(SECRET_KEY))
 		if err != nil {
 			http.Error(w, "Erro ao criar o token", http.StatusInternalServerError)
 			return
@@ -44,12 +52,18 @@ func CreateTokenHandler(ID int, next http.Handler) http.Handler {
 
 func validateToken(tokenString string) (string, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
+		errEnv := godotenv.Load()
+		if errEnv != nil {
+			fmt.Println("Error loading .env file  ", errEnv.Error())
+		}
+		SECRET_KEY := os.Getenv("SECRET_KEY_TOKEN")
+
 		// Verifica se o método de assinatura é HMAC com SHA256
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("Método de assinatura inválido: %v", token.Header["alg"])
 		}
 		// Retorna a chave secreta usada para assinar o token
-		return []byte("my-secret-key"), nil
+		return []byte(SECRET_KEY), nil
 	})
 	if err != nil {
 		return "", fmt.Errorf("Erro ao analisar o token: %v", err)
