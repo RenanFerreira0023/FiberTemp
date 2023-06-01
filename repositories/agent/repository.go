@@ -88,17 +88,23 @@ func (r *AgentRepository) SendCopy(bodyCopy models.QueryBodySendCopy) (int, erro
 func (r *AgentRepository) GetAgentFromEmailAndChannel(email string, channel string) (models.QueryGetLogin, error) {
 	var idAgent int
 	var idChannel int
+	var qttAlert int
+	var qttCopyAccounts int
 	var structLogin models.QueryGetLogin
-	err := r.db.QueryRow("SELECT a.id , c.id FROM users_agent AS a, channels AS c WHERE a.email = ? and c.channel_name = ?", email, channel).Scan(&idAgent, &idChannel)
+	err := r.db.QueryRow("SELECT a.id , c.id  , a.quantity_alerts, a.quantity_account_copy FROM users_agent AS a, channels AS c WHERE a.email = ? and c.channel_name = ?", email, channel).Scan(&idAgent, &idChannel, &qttAlert, &qttCopyAccounts)
 	if err != nil {
 		structLogin.AgentID = -1
 		structLogin.ChannelID = -1
+		structLogin.QuantityAlert = -1
+		structLogin.AccountCopy = -1
 
 		return structLogin, fmt.Errorf("Agente ou canal não encontrado")
 	}
 
 	structLogin.AgentID = idAgent
 	structLogin.ChannelID = idChannel
+	structLogin.QuantityAlert = qttAlert
+	structLogin.AccountCopy = qttCopyAccounts
 
 	return structLogin, nil
 }

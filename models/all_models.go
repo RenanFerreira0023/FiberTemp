@@ -42,8 +42,10 @@ type QueryBodyCreateChannel struct {
 }
 
 type QueryGetLogin struct {
-	AgentID   int `json:"agent_id"`
-	ChannelID int `json:"channel_id"`
+	AgentID       int `json:"agent_id"`
+	ChannelID     int `json:"channel_id"`
+	QuantityAlert int `json:"quantity_alerts"`
+	AccountCopy   int `json:"quantity_account_copy"`
 }
 
 type QueryBodySendCopy struct {
