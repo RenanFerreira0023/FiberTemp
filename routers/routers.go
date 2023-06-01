@@ -22,7 +22,7 @@ func NewRouter() http.Handler {
 
 	mux := http.NewServeMux()
 
-	mux.HandleFunc("/Auth/Repector/", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/Repector/Auth/", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case "GET":
 			middlewareController.CheckAntiDDoS(
@@ -40,7 +40,7 @@ func NewRouter() http.Handler {
 		}
 	})
 
-	mux.HandleFunc("/Create/Receptor", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/Receptor/Create", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case "POST":
 			middlewareController.CheckAntiDDoS(
@@ -58,7 +58,7 @@ func NewRouter() http.Handler {
 		}
 	})
 
-	mux.HandleFunc("/Login/Receptor/", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/Receptor/Login/", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case "GET":
 			middlewareController.CheckAntiDDoS(
@@ -76,7 +76,7 @@ func NewRouter() http.Handler {
 		}
 	})
 
-	mux.HandleFunc("/Find/Copy/", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/Copy/Find/", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case "GET":
 			middlewareController.CheckAntiDDoS(
@@ -95,7 +95,7 @@ func NewRouter() http.Handler {
 	})
 
 	//
-	mux.HandleFunc("/Send/Reply/Copy", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/Copy/Reply", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case "POST":
 			middlewareController.CheckAntiDDoS(
@@ -123,7 +123,7 @@ func NewRouter() http.Handler {
 	/////~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	/////~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-	mux.HandleFunc("/Auth/Agent/", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/Agent/Auth/", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case "GET":
 			middlewareController.CheckAntiDDoS(
@@ -141,7 +141,7 @@ func NewRouter() http.Handler {
 		}
 	})
 
-	mux.HandleFunc("/Create/Agent", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/Agent/Create", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case "POST":
 			middlewareController.CheckAntiDDoS(
@@ -159,7 +159,7 @@ func NewRouter() http.Handler {
 		}
 	})
 
-	mux.HandleFunc("/Create/Channel", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/Channel/Create", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case "POST":
 			middlewareController.CheckAntiDDoS(
@@ -177,7 +177,7 @@ func NewRouter() http.Handler {
 		}
 	})
 
-	mux.HandleFunc("/Login/Agent/", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/Agent/Login/", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case "GET":
 			middlewareController.CheckAntiDDoS(
@@ -195,7 +195,7 @@ func NewRouter() http.Handler {
 		}
 	})
 
-	mux.HandleFunc("/Send/Copy", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/Copy/Send", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case "POST":
 			middlewareController.CheckAntiDDoS(
@@ -213,7 +213,7 @@ func NewRouter() http.Handler {
 		}
 	})
 
-	mux.HandleFunc("/Insert/PermissionChannel", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("Channel/Permission/insert", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case "POST":
 			middlewareController.CheckAntiDDoS(
