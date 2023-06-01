@@ -61,7 +61,6 @@ func (r *AgentRepository) SendCopy(bodyCopy models.QueryBodySendCopy) (int, erro
 	if err == nil || idUserAgent != 0 {
 		return idUserAgent, fmt.Errorf("Copy ja existe")
 	}
-	fmt.Println("TUDO CERTO.. INSERIR NO DB ")
 	var symbol = bodyCopy.Symbol
 	var actionType = bodyCopy.ActionType
 	var ticket = bodyCopy.Ticket
@@ -205,11 +204,15 @@ func (r *AgentRepository) InsertClient(bodyClientReq models.QueryBodyUsersAgent)
 	var accountValidBody = bodyClientReq.AccountValid
 	var quantityAlertBody = bodyClientReq.QuantityAlert
 	var quantityAccountCopyBody = bodyClientReq.AccountCopy
-	_, err = r.db.Exec("INSERT INTO users_agent (first_name, 	second_name, 		email, 		dt_create_account, 	dt_expired_account, 	account_valid, 		quantity_alerts, 	quantity_account_copy) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+	request, err := r.db.Exec("INSERT INTO users_agent (first_name, 	second_name, 		email, 		dt_create_account, 	dt_expired_account, 	account_valid, 		quantity_alerts, 	quantity_account_copy) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
 		firtNameBody, secondNameBody, emailBody, dtCreateBody, dtExpiredBody, accountValidBody, quantityAlertBody, quantityAccountCopyBody)
 	if err != nil {
 		return 0, fmt.Errorf("Erro ao inserir uma copy no banco de dados  ", err.Error())
 	}
 
-	return 0, nil
+	insertID, err := request.LastInsertId()
+	if err != nil {
+		panic(err.Error())
+	}
+	return int(insertID), nil
 }

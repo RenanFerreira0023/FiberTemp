@@ -136,3 +136,8 @@ type QueryRequestToken struct {
 	UserID int    `json:"id"`
 	Token  string `json:"token"`
 }
+
+type JsonRequest200 struct {
+	DataBaseID int    `json:"id"`
+	MsgInsert  string `json:"message_insert"`
+}

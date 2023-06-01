@@ -27,13 +27,17 @@ func (r *ReceptorRepository) InsertReqCopy(bodyReqCopy models.QueryRequestReqCop
 	if errCheck == nil {
 		return 0, fmt.Errorf("Essa ação ja foi executada")
 	}
-	_, err := r.db.Exec("INSERT INTO req_copy (dt_send_copy, channel_id, users_receptor_id, all_copy_id)  VALUES (?,?,?,?)",
+	request, err := r.db.Exec("INSERT INTO req_copy (dt_send_copy, channel_id, users_receptor_id, all_copy_id)  VALUES (?,?,?,?)",
 		dateSendOrder, channelID, receptorID, allCopyID)
 	if err != nil {
 		return 0, fmt.Errorf("Erro ao inserir uma requisição de copy no banco de dados  ", err.Error())
 	}
 
-	return 0, nil
+	insertID, err := request.LastInsertId()
+	if err != nil {
+		panic(err.Error())
+	}
+	return int(insertID), nil
 }
 
 func (r *ReceptorRepository) CheckReqCopy(idChannel int, idReceptor int, idAllCopy int, dateSendOrder string) error {
@@ -196,13 +200,17 @@ func (r *ReceptorRepository) InsertClient(bodyClientReq models.QueryGetUserRecep
 	var dtCreateBody = bodyClientReq.CreateAccount
 	var dtExpiredBody = bodyClientReq.ExpiredAccount
 
-	_, err = r.db.Exec("INSERT INTO users_receptor (first_name, second_name, email, dt_create_account, dt_expired_account)  VALUES (?,?,?,?,?)",
+	request, err := r.db.Exec("INSERT INTO users_receptor (first_name, second_name, email, dt_create_account, dt_expired_account)  VALUES (?,?,?,?,?)",
 		firtNameBody, secondNameBody, emailBody, dtCreateBody, dtExpiredBody)
 	if err != nil {
 		return 0, fmt.Errorf("Erro ao inserir uma copy no banco de dados  ", err.Error())
 	}
 
-	return 0, nil
+	insertID, err := request.LastInsertId()
+	if err != nil {
+		panic(err.Error())
+	}
+	return int(insertID), nil
 }
 
 func (r *ReceptorRepository) checkExistLogin(emailCheck string) (int, error) {

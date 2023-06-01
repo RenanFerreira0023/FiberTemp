@@ -22,14 +22,14 @@ func NewDB() *sql.DB {
 
 	dbPort := os.Getenv("MYSQL_PORT")
 	dbHost := os.Getenv("MYSQL_HOST")
+	/*
+		fmt.Println("    |   dbHost    ", dbHost)
+		fmt.Println("    |   dbPassword    ", dbPassword)
+		fmt.Println("    |   dbName    ", dbName)
 
-	fmt.Println("    |   dbHost    ", dbHost)
-	fmt.Println("    |   dbPassword    ", dbPassword)
-	fmt.Println("    |   dbName    ", dbName)
-
-	fmt.Println("    |   dbPort    ", dbPort)
-	fmt.Println("    |   dbUser    ", dbUser)
-
+		fmt.Println("    |   dbPort    ", dbPort)
+		fmt.Println("    |   dbUser    ", dbUser)
+	*/
 	db, err := sql.Open("mysql", ""+dbUser+":"+dbPassword+"@tcp("+dbHost+":"+dbPort+")/"+dbName+"?parseTime=true")
 	if err != nil {
 		panic(err)

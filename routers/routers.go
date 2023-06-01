@@ -160,7 +160,7 @@ func NewRouter() http.Handler {
 		case "POST":
 			middlewareController.CheckAntiDDoS(
 				middlewareController.CheckValidToken(
-					agentController.InsertAgent(
+					agentController.CreateAgent(
 						http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 						})))).ServeHTTP(w, r)
@@ -214,7 +214,7 @@ func NewRouter() http.Handler {
 		case "POST":
 			middlewareController.CheckAntiDDoS(
 				middlewareController.CheckValidToken(
-					agentController.SendCopy(
+					agentController.InsertCopy(
 						http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 						})))).ServeHTTP(w, r)
@@ -227,7 +227,7 @@ func NewRouter() http.Handler {
 		}
 	})
 
-	mux.HandleFunc("Channel/Permission/insert", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/Channel/Permission/Insert", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case "POST":
 			middlewareController.CheckAntiDDoS(

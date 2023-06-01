@@ -40,18 +40,25 @@ func (a *AgentController) InsertPermissionChannel(next http.Handler) http.Handle
 			return
 		}
 
-		idChannel, err := a.repository.InsertPermissionChannel(bodyPermission)
+		idPermission, err := a.repository.InsertPermissionChannel(bodyPermission)
 		if err != nil {
 			http.Error(w, middleware.ConvertStructError(err.Error()), http.StatusBadRequest)
 			return
 		}
 
-		fmt.Println("Canal inserido com sucesso ! ", idChannel)
+		var strReq200 models.JsonRequest200
+		strReq200.DataBaseID = idPermission
+		strReq200.MsgInsert = fmt.Sprint("Permissão ao canal ", bodyPermission.ChannelID, " dada com sucesso")
+		jsonResponse, err := json.Marshal(strReq200)
+		if err != nil {
+			http.Error(w, middleware.ConvertStructError("Trasnformação de json invalido"), http.StatusInternalServerError)
+		}
+		w.Write([]byte(jsonResponse))
 
 	})
 }
 
-func (a *AgentController) SendCopy(next http.Handler) http.Handler {
+func (a *AgentController) InsertCopy(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// recupera tudo do body
 		var sendCopyBody models.QueryBodySendCopy
@@ -116,7 +123,15 @@ func (a *AgentController) SendCopy(next http.Handler) http.Handler {
 			return
 		}
 
-		fmt.Println("copy inserida com sucesso ", idCopy)
+		var strReq200 models.JsonRequest200
+		strReq200.DataBaseID = idCopy
+		strReq200.MsgInsert = "Copy inserido com sucesso"
+		jsonResponse, err := json.Marshal(strReq200)
+		if err != nil {
+			http.Error(w, middleware.ConvertStructError("Trasnformação de json invalido"), http.StatusInternalServerError)
+		}
+
+		w.Write([]byte(jsonResponse))
 
 	})
 }
@@ -149,12 +164,20 @@ func (a *AgentController) CreateChannel(next http.Handler) http.Handler {
 			http.Error(w, middleware.ConvertStructError(err.Error()), http.StatusBadRequest)
 			return
 		}
-		fmt.Println("Canal criado com sucesso ID : ", idChannel)
+
+		var strReq200 models.JsonRequest200
+		strReq200.DataBaseID = idChannel
+		strReq200.MsgInsert = "Canal [ " + channelBody.NameChannel + " ] criado com sucesso"
+		jsonResponse, err := json.Marshal(strReq200)
+		if err != nil {
+			http.Error(w, middleware.ConvertStructError("Trasnformação de json invalido"), http.StatusInternalServerError)
+		}
+		w.Write([]byte(jsonResponse))
 
 	})
 }
 
-func (a *AgentController) InsertAgent(next http.Handler) http.Handler {
+func (a *AgentController) CreateAgent(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var copyBody models.QueryBodyUsersAgent
 		if err := json.NewDecoder(r.Body).Decode(&copyBody); err != nil {
@@ -202,12 +225,20 @@ func (a *AgentController) InsertAgent(next http.Handler) http.Handler {
 			return
 		}
 
-		inte, err := a.repository.InsertClient(copyBody)
+		idAgent, err := a.repository.InsertClient(copyBody)
 		if err != nil {
 			http.Error(w, middleware.ConvertStructError(err.Error()), http.StatusBadRequest)
 			return
 		}
-		fmt.Println(inte)
+		var strReq200 models.JsonRequest200
+		strReq200.DataBaseID = idAgent
+		strReq200.MsgInsert = fmt.Sprint("Agente [ " + copyBody.Email + " ] inserido com sucesso")
+		jsonResponse, err := json.Marshal(strReq200)
+		if err != nil {
+			http.Error(w, middleware.ConvertStructError("Trasnformação de json invalido"), http.StatusInternalServerError)
+		}
+		w.Write([]byte(jsonResponse))
+
 		next.ServeHTTP(w, r)
 	})
 }

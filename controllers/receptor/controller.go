@@ -51,12 +51,21 @@ func (c *ReceptorController) SendReqCopy(next http.Handler) http.Handler {
 			return
 		}
 
-		requestInsert, err := c.repository.InsertReqCopy(reqCopyBody)
+		idReqCopy, err := c.repository.InsertReqCopy(reqCopyBody)
 		if err != nil {
 			http.Error(w, middleware.ConvertStructError(err.Error()), http.StatusInternalServerError)
 			return
 		}
-		fmt.Print("requestInsert     ", requestInsert)
+
+		var strReq200 models.JsonRequest200
+		strReq200.DataBaseID = idReqCopy
+		strReq200.MsgInsert = "Requisição inserida com sucesso"
+		jsonResponse, err := json.Marshal(strReq200)
+		if err != nil {
+			http.Error(w, middleware.ConvertStructError("Trasnformação de json invalido"), http.StatusInternalServerError)
+		}
+		w.Write([]byte(jsonResponse))
+
 		next.ServeHTTP(w, r)
 
 	})
@@ -67,21 +76,21 @@ func (c *ReceptorController) GetCopy(next http.Handler) http.Handler {
 		agentID := r.URL.Query().Get("id_agent")
 		agentIDstr, err := strconv.Atoi(agentID)
 		if err != nil {
-			fmt.Println("Erro ao converter a string para int:", err)
+			http.Error(w, middleware.ConvertStructError("Erro ao converter a string para int:"+err.Error()), http.StatusInternalServerError)
 			return
 		}
 
 		channelID := r.URL.Query().Get("id_channel")
 		channelIDstr, err := strconv.Atoi(channelID)
 		if err != nil {
-			fmt.Println("Erro ao converter a string para int:", err)
+			http.Error(w, middleware.ConvertStructError("Erro ao converter a string para int:"+err.Error()), http.StatusInternalServerError)
 			return
 		}
 
 		receptorID := r.URL.Query().Get("id_receptor")
 		receptorIDstr, err := strconv.Atoi(receptorID)
 		if err != nil {
-			fmt.Println("Erro ao converter a string para int:", err)
+			http.Error(w, middleware.ConvertStructError("Erro ao converter a string para int:"+err.Error()), http.StatusInternalServerError)
 			return
 		}
 
@@ -92,14 +101,14 @@ func (c *ReceptorController) GetCopy(next http.Handler) http.Handler {
 		offset := r.URL.Query().Get("page")
 		offsetStr, err := strconv.Atoi(offset)
 		if err != nil {
-			fmt.Println("Erro ao converter a string para int:", err)
+			http.Error(w, middleware.ConvertStructError("Erro ao converter a string para int:"+err.Error()), http.StatusInternalServerError)
 			return
 		}
 
 		limitPage := r.URL.Query().Get("limit")
 		limitPageStr, err := strconv.Atoi(limitPage)
 		if err != nil {
-			fmt.Println("Erro ao converter a string para int:", err)
+			http.Error(w, middleware.ConvertStructError("Erro ao converter a string para int:"+err.Error()), http.StatusInternalServerError)
 			return
 		}
 
@@ -255,8 +264,8 @@ func (c *ReceptorController) CheckUserExist(next http.Handler) http.Handler {
 			http.Error(w, middleware.ConvertStructError("Conta Expirada, Envie um e-mail imediato com o agente provedor do sinal para regularizar sua situação"), http.StatusForbidden)
 			return
 		}
-		middlewareController.CreateAuthMiddleware(receptor[0].ID, next).ServeHTTP(w, r)
-		//		next.ServeHTTP(w, r)
+		middlewareController.CreateAuthMiddleware(receptor[0].ID, next).
+			ServeHTTP(w, r)
 	})
 }
 
@@ -294,12 +303,21 @@ func (c *ReceptorController) InsertReceptor(next http.Handler) http.Handler {
 			return
 		}
 
-		idInsert, err := c.repository.InsertClient(receptorBody)
+		idReceptor, err := c.repository.InsertClient(receptorBody)
 		if err != nil {
 			http.Error(w, middleware.ConvertStructError(err.Error()), http.StatusBadRequest)
 			return
 		}
-		fmt.Println(idInsert)
+
+		var strReq200 models.JsonRequest200
+		strReq200.DataBaseID = idReceptor
+		strReq200.MsgInsert = "Receptor [ " + receptorBody.Email + " ] criado com sucesso"
+		jsonResponse, err := json.Marshal(strReq200)
+		if err != nil {
+			http.Error(w, middleware.ConvertStructError("Trasnformação de json invalido"), http.StatusInternalServerError)
+		}
+		w.Write([]byte(jsonResponse))
+
 		next.ServeHTTP(w, r)
 	})
 }
