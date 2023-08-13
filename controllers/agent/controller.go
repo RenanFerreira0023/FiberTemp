@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 	"time"
 
 	middlewareController "github.com/RenanFerreira0023/FiberTemp/controllers/middleware"
@@ -177,6 +178,126 @@ func (a *AgentController) CreateChannel(next http.Handler) http.Handler {
 	})
 }
 
+func (c *AgentController) DeleteChannel(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var bodyDelete models.BodyDelete
+		if err := json.NewDecoder(r.Body).Decode(&bodyDelete); err != nil {
+			http.Error(w, middleware.ConvertStructError(err.Error()), http.StatusBadRequest)
+			return
+		}
+
+		requestDelete := c.repository.DeleteChannel(bodyDelete)
+		if requestDelete == false {
+			http.Error(w, middleware.ConvertStructError("Houve um problema ao deletar o canal"), http.StatusInternalServerError)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+
+	})
+}
+
+func (c *AgentController) UpdateChannel(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		var bodyUpdate models.BodyUpdate
+		if err := json.NewDecoder(r.Body).Decode(&bodyUpdate); err != nil {
+			http.Error(w, middleware.ConvertStructError(err.Error()), http.StatusBadRequest)
+			return
+		}
+
+		if !middlewareController.IsValidInput("number", fmt.Sprint(bodyUpdate.AgentID)) {
+			http.Error(w, middlewareController.ConvertStructError(fmt.Sprintf("Valor inválido para o parâmetro '%s': %s", "number", fmt.Sprint(bodyUpdate.AgentID))), http.StatusBadRequest)
+			return
+		}
+
+		if !middlewareController.IsValidInput("number", fmt.Sprint(bodyUpdate.ID)) {
+			http.Error(w, middlewareController.ConvertStructError(fmt.Sprintf("Valor inválido para o parâmetro '%s': %s", "number", fmt.Sprint(bodyUpdate.ID))), http.StatusBadRequest)
+			return
+		}
+
+		if !middlewareController.IsValidInput("channel", fmt.Sprint(bodyUpdate.NewNameChannel)) {
+			http.Error(w, middlewareController.ConvertStructError(fmt.Sprintf("Valor inválido para o parâmetro '%s': %s", "channel", fmt.Sprint(bodyUpdate.NewNameChannel))), http.StatusBadRequest)
+			return
+		}
+
+		_, errEditChannel := c.repository.EditChannel(bodyUpdate)
+		if errEditChannel != nil {
+			http.Error(w, middleware.ConvertStructError("Houve um problema ao editar o canal"), http.StatusInternalServerError)
+			return
+		}
+
+		jsonResponse, err := json.Marshal(bodyUpdate)
+		if err != nil {
+			http.Error(w, middleware.ConvertStructError("Trasnformação de json invalido"), http.StatusInternalServerError)
+		}
+		w.Write([]byte(jsonResponse))
+
+	})
+}
+
+func (c *AgentController) GetListChannel(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+		agentID := r.URL.Query().Get("id_agent")
+		agentIDstr, err := strconv.Atoi(agentID)
+		if err != nil {
+			http.Error(w, middleware.ConvertStructError("Erro ao converter a string para int:"+err.Error()), http.StatusInternalServerError)
+			return
+		}
+
+		//	receptorID := r.URL.Query().Get("id_receptor")
+		startDateStr := r.URL.Query().Get("start_date")
+		endDateStr := r.URL.Query().Get("end_date")
+
+		offset := r.URL.Query().Get("page")
+		offsetStr, err := strconv.Atoi(offset)
+		if err != nil {
+			http.Error(w, middleware.ConvertStructError("Erro ao converter a string para int:"+err.Error()), http.StatusInternalServerError)
+			return
+		}
+
+		limitPage := r.URL.Query().Get("limit")
+		limitPageStr, err := strconv.Atoi(limitPage)
+		if err != nil {
+			http.Error(w, middleware.ConvertStructError("Erro ao converter a string para int:"+err.Error()), http.StatusInternalServerError)
+			return
+		}
+
+		var structURL models.StrutcURLGetChannelList
+		structURL.AgentID = agentIDstr
+		structURL.DateStart = startDateStr
+		structURL.DateEnd = endDateStr
+		structURL.Offset = offsetStr
+		structURL.PageLimit = limitPageStr
+		fmt.Println("structURL.AgentID   ", structURL.AgentID)
+		fmt.Println("structURL.startDateStr   ", startDateStr)
+		fmt.Println("structURL.endDateStr   ", endDateStr)
+		fmt.Println("structURL.offsetStr   ", offsetStr)
+		fmt.Println("structURL.limitPageStr   ", limitPageStr)
+
+		//////////////////////
+		//// GET a lista de canal
+		//////////////////////
+		requestChannelList, err := c.repository.GetChannelList(structURL)
+		if err != nil {
+			http.Error(w, middleware.ConvertStructError(err.Error()), http.StatusInternalServerError)
+			return
+		}
+
+		if len(requestChannelList) > 0 {
+			jsonResponse, err := json.Marshal(requestChannelList)
+			if err != nil {
+				http.Error(w, middleware.ConvertStructError("Trasnformação de json invalido"), http.StatusInternalServerError)
+			}
+			w.Write([]byte(jsonResponse))
+		} else {
+			http.Error(w, middleware.ConvertStructError("Sem dados para retornar"), http.StatusNotFound)
+		}
+		next.ServeHTTP(w, r)
+
+	})
+}
+
 func (a *AgentController) CreateAgent(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var copyBody models.QueryBodyUsersAgent
@@ -197,6 +318,11 @@ func (a *AgentController) CreateAgent(next http.Handler) http.Handler {
 
 		if !middlewareController.IsValidInput("email", (copyBody.Email)) {
 			http.Error(w, middlewareController.ConvertStructError(fmt.Sprintf("Valor inválido para o parâmetro '%s': %s", "email", fmt.Sprint(copyBody.Email))), http.StatusBadRequest)
+			return
+		}
+
+		if !middlewareController.IsValidInput("password", (copyBody.Password_Agent)) {
+			http.Error(w, middlewareController.ConvertStructError(fmt.Sprintf("Valor inválido para o parâmetro '%s': %s", "password", fmt.Sprint(copyBody.Password_Agent))), http.StatusBadRequest)
 			return
 		}
 
@@ -262,7 +388,52 @@ func (a *AgentController) CheckURLDatas(next http.Handler) http.Handler {
 	})
 }
 
-func (a *AgentController) GetLoginAgent(next http.Handler) http.Handler {
+func (a *AgentController) GetLoginAgentAdm(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+		var bodyLogin models.BodyPostLoginAdm
+		if err := json.NewDecoder(r.Body).Decode(&bodyLogin); err != nil {
+			http.Error(w, middleware.ConvertStructError(err.Error()), http.StatusBadRequest)
+			return
+		}
+
+		if !middlewareController.IsValidInput("email", (bodyLogin.Login)) {
+			http.Error(w, middlewareController.ConvertStructError(fmt.Sprintf("Valor inválido para o parâmetro '%s': %s", "Login", fmt.Sprint(bodyLogin.Login))), http.StatusBadRequest)
+			return
+		}
+
+		if !middlewareController.IsValidInput("password", (bodyLogin.Password)) {
+			http.Error(w, middlewareController.ConvertStructError(fmt.Sprintf("Valor inválido para o parâmetro '%s': %s", "Senha", fmt.Sprint(bodyLogin.Password))), http.StatusBadRequest)
+			return
+		}
+
+		agent, err := a.repository.GetisValidLoginAdm(bodyLogin)
+		if err != nil {
+			http.Error(w, middleware.ConvertStructError(err.Error()), http.StatusInternalServerError)
+			return
+		}
+		if time.Now().After(agent[0].ExpiredAccount) {
+			http.Error(w, middleware.ConvertStructError("Conta Expirada, Envie um e-mail imediato para appsskilldeveloper@gmail.com para regularizar sua situação"), http.StatusForbidden)
+			return
+		}
+
+		if !agent[0].AccountValid {
+			http.Error(w, middleware.ConvertStructError("Conta Desativada, Envie um e-mail imediato para appsskilldeveloper@gmail.com para regularizar sua situação"), http.StatusForbidden)
+			return
+		}
+
+		jsonResponse, err := json.Marshal(agent)
+		if err != nil {
+			http.Error(w, middleware.ConvertStructError("Trasnformação de json invalido"), http.StatusInternalServerError)
+		}
+
+		w.Write([]byte(jsonResponse))
+		next.ServeHTTP(w, r)
+
+	})
+}
+
+func (a *AgentController) GetLoginAgentMt5(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 		loginValue := r.URL.Query().Get("login")
@@ -276,7 +447,7 @@ func (a *AgentController) GetLoginAgent(next http.Handler) http.Handler {
 			return
 		}
 
-		agent, err := a.repository.GetisValidLogin(loginValue)
+		agent, err := a.repository.GetisValidLoginMt5(loginValue)
 		if err != nil {
 			http.Error(w, middleware.ConvertStructError(err.Error()), http.StatusInternalServerError)
 			return
@@ -312,7 +483,7 @@ func (a *AgentController) CheckUserExist(next http.Handler) http.Handler {
 
 		loginValue := r.URL.Query().Get("login")
 
-		agent, err := a.repository.GetisValidLogin(loginValue)
+		agent, err := a.repository.GetisValidLoginMt5(loginValue)
 		if err != nil {
 			http.Error(w, middleware.ConvertStructError(err.Error()), http.StatusNotFound)
 			return

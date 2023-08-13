@@ -7,6 +7,8 @@ import (
 	"regexp"
 	"strconv"
 
+	"encoding/hex"
+
 	"github.com/RenanFerreira0023/FiberTemp/middleware"
 	"github.com/RenanFerreira0023/FiberTemp/models"
 )
@@ -70,6 +72,8 @@ func IsValidInput(key, value string) bool {
 		return IsValidBoolean(value)
 	case "tag":
 		return IsValidTag(value)
+	case "password":
+		return IsValidSHA256Key(value)
 
 	default:
 		return true // Parâmetro desconhecido, considerado válido
@@ -128,5 +132,21 @@ func IsValidTag(value string) bool {
 
 func IsValidBoolean(value string) bool {
 	_, err := strconv.ParseBool(value)
+	return err == nil
+}
+
+func IsValidSHA256Key(value string) bool {
+	// Verifica se o valor tem exatamente 64 caracteres hexadecimais
+	if len(value) != 64 {
+		return false
+	}
+
+	regex := regexp.MustCompile(`^[a-fA-F0-9]+$`)
+	if !regex.MatchString(value) {
+		return false
+	}
+
+	// Verifica se o valor pode ser decodificado como bytes
+	_, err := hex.DecodeString(value)
 	return err == nil
 }

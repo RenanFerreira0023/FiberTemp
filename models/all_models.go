@@ -17,6 +17,7 @@ type QueryGetUsersAgent struct {
 	FirstName      string    `json:"first_name"`
 	SecondName     string    `json:"second_name"`
 	Email          string    `json:"email"`
+	PasswordAgent  string    `json:"password_agent"`
 	CreateAccount  time.Time `json:"dt_create_account"`
 	ExpiredAccount time.Time `json:"dt_expired_account"`
 	AccountValid   bool      `json:"account_valid"`
@@ -28,6 +29,7 @@ type QueryBodyUsersAgent struct {
 	FirstName      string `json:"first_name"`
 	SecondName     string `json:"second_name"`
 	Email          string `json:"email"`
+	Password_Agent string `json:"password_agent"`
 	CreateAccount  string `json:"dt_create_account"`
 	ExpiredAccount string `json:"dt_expired_account"`
 	AccountValid   bool   `json:"account_valid"`
@@ -140,4 +142,35 @@ type QueryRequestToken struct {
 type JsonRequest200 struct {
 	DataBaseID int    `json:"id"`
 	MsgInsert  string `json:"message_insert"`
+}
+
+type StrutcURLGetChannelList struct {
+	AgentID   int    `json:"user_agent_id"`
+	DateStart string `json:"dt_start"`
+	DateEnd   string `json:"dt_end"`
+	Offset    int    `json:"offset"`
+	PageLimit int    `json:"limit"`
+}
+
+type RequestChannelList struct {
+	ID          int       `json:"id"`
+	AgentID     int       `json:"user_agent_id"`
+	ChannelName string    `json:"channel_name"`
+	DateCreate  time.Time `json:"dt_create_channel"`
+}
+
+type BodyPostLoginAdm struct {
+	Login    string `json:"login"`
+	Password string `json:"password"`
+}
+
+type BodyDelete struct {
+	ID      int `json:"id"`
+	AgentID int `json:"user_agent_id"`
+}
+
+type BodyUpdate struct {
+	ID             int    `json:"id"`
+	AgentID        int    `json:"user_agent_id"`
+	NewNameChannel string `json:"channel_name"`
 }

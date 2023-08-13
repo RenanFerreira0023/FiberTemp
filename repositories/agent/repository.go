@@ -108,16 +108,16 @@ func (r *AgentRepository) GetAgentFromEmailAndChannel(email string, channel stri
 	return structLogin, nil
 }
 
-func (r *AgentRepository) checkExistChannel(channelCheck string) (int, error) {
+func (r *AgentRepository) checkExistChannel(channelCheck string, agentID int) (int, error) {
 	var idChannel int
-	err := r.db.QueryRow("SELECT id FROM channels WHERE channel_name = ? ", channelCheck).Scan(&idChannel)
+	err := r.db.QueryRow("SELECT id FROM channels WHERE channel_name = ? AND users_agent_id = ?", channelCheck, agentID).Scan(&idChannel)
 	if err != nil {
 		return 0, fmt.Errorf(err.Error())
 	}
 	return idChannel, nil
 }
 func (r *AgentRepository) InsertChannel(bodyChannelReq models.QueryBodyCreateChannel) (int, error) {
-	idChannel, err := r.checkExistChannel(bodyChannelReq.NameChannel)
+	idChannel, err := r.checkExistChannel(bodyChannelReq.NameChannel, bodyChannelReq.AgentID)
 
 	if err == nil || idChannel != 0 {
 		return idChannel, fmt.Errorf("Canal ja existe	", strconv.Itoa(idChannel))
@@ -140,7 +140,52 @@ func (r *AgentRepository) InsertChannel(bodyChannelReq models.QueryBodyCreateCha
 	return int(insertID), nil
 }
 
-func (r *AgentRepository) GetisValidLogin(email string) ([]models.QueryGetUsersAgent, error) {
+func (r *AgentRepository) GetisValidLoginAdm(bodyLogin models.BodyPostLoginAdm) ([]models.QueryGetUsersAgent, error) {
+	rows, err := r.db.Query("SELECT id, first_name, second_name, email, password_agent, dt_create_account, dt_expired_account, account_valid, quantity_alerts, quantity_account_copy FROM users_agent WHERE email = ? ", bodyLogin.Login)
+	if err != nil {
+		fmt.Println("\n\n ERRO : ", err.Error())
+		return nil, err
+	}
+	defer rows.Close()
+
+	var users []models.QueryGetUsersAgent
+	for rows.Next() {
+		var user models.QueryGetUsersAgent
+		err := rows.Scan(
+			&user.ID,
+			&user.FirstName,
+			&user.SecondName,
+			&user.Email,
+			&user.PasswordAgent,
+			&user.CreateAccount,
+			&user.ExpiredAccount,
+			&user.AccountValid,
+			&user.QuantityAlert,
+			&user.AccountCopy,
+		)
+		if err != nil {
+			fmt.Println("\n\n ERRO : ", err.Error())
+			return nil, err
+		}
+		users = append(users, user)
+	}
+
+	if err := rows.Err(); err != nil {
+		fmt.Println("\n\n ERRO : ", err.Error())
+		return nil, err
+	}
+
+	if len(users) == 0 {
+		return nil, fmt.Errorf("Usuário não encontrado")
+	}
+	if users[0].PasswordAgent != bodyLogin.Password {
+		return nil, fmt.Errorf("Senha inválida")
+	}
+
+	return users, nil
+}
+
+func (r *AgentRepository) GetisValidLoginMt5(email string) ([]models.QueryGetUsersAgent, error) {
 	rows, err := r.db.Query("SELECT id, first_name, second_name, email, dt_create_account, dt_expired_account, account_valid, quantity_alerts, quantity_account_copy FROM users_agent WHERE email = ?", email)
 	if err != nil {
 		fmt.Println("\n\n ERRO : ", err.Error())
@@ -199,13 +244,14 @@ func (r *AgentRepository) InsertClient(bodyClientReq models.QueryBodyUsersAgent)
 	var firtNameBody = bodyClientReq.FirstName
 	var secondNameBody = bodyClientReq.SecondName
 	var emailBody = bodyClientReq.Email
+	var passwordBody = bodyClientReq.Password_Agent
 	var dtCreateBody = bodyClientReq.CreateAccount
 	var dtExpiredBody = bodyClientReq.ExpiredAccount
 	var accountValidBody = bodyClientReq.AccountValid
 	var quantityAlertBody = bodyClientReq.QuantityAlert
 	var quantityAccountCopyBody = bodyClientReq.AccountCopy
-	request, err := r.db.Exec("INSERT INTO users_agent (first_name, 	second_name, 		email, 		dt_create_account, 	dt_expired_account, 	account_valid, 		quantity_alerts, 	quantity_account_copy) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-		firtNameBody, secondNameBody, emailBody, dtCreateBody, dtExpiredBody, accountValidBody, quantityAlertBody, quantityAccountCopyBody)
+	request, err := r.db.Exec("INSERT INTO users_agent (first_name, 	second_name, 		email, 		,password_agent,	dt_create_account, 	dt_expired_account, 	account_valid, 		quantity_alerts, 	quantity_account_copy) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+		firtNameBody, secondNameBody, emailBody, passwordBody, dtCreateBody, dtExpiredBody, accountValidBody, quantityAlertBody, quantityAccountCopyBody)
 	if err != nil {
 		return 0, fmt.Errorf("Erro ao inserir uma copy no banco de dados  ", err.Error())
 	}
@@ -215,4 +261,81 @@ func (r *AgentRepository) InsertClient(bodyClientReq models.QueryBodyUsersAgent)
 		panic(err.Error())
 	}
 	return int(insertID), nil
+}
+
+func (r *AgentRepository) GetChannelList(structURL models.StrutcURLGetChannelList) ([]models.RequestChannelList, error) {
+
+	rows, err := r.db.Query("SELECT id , users_agent_id , channel_name , dt_create_channel    FROM channels WHERE users_agent_id = ? AND dt_create_channel BETWEEN ? AND ?  LIMIT ?,?;",
+		structURL.AgentID, structURL.DateEnd, structURL.DateStart, structURL.Offset, structURL.PageLimit)
+
+	defer rows.Close()
+
+	if err != nil {
+		fmt.Println("\n\n ERRO : ", err.Error())
+		return nil, err
+	}
+	if !rows.Next() {
+		fmt.Println("null")
+		return nil, nil
+	}
+	var bodyChannelsList []models.RequestChannelList
+
+	for rows.Next() {
+
+		var bodyCopyTrader models.RequestChannelList
+		err = rows.Scan(
+			&bodyCopyTrader.ID,
+			&bodyCopyTrader.AgentID,
+			&bodyCopyTrader.ChannelName,
+			&bodyCopyTrader.DateCreate,
+		)
+		if err != nil {
+			return nil, err
+		}
+		bodyChannelsList = append(bodyChannelsList, bodyCopyTrader)
+	}
+	return bodyChannelsList, nil
+}
+
+func (r *AgentRepository) DeleteChannel(structURL models.BodyDelete) bool {
+
+	_, err := r.db.Exec("DELETE FROM req_copy WHERE channel_id = ?;", structURL.ID)
+	if err != nil {
+		// Lida com o erro
+	}
+
+	_, err = r.db.Exec("DELETE FROM all_copy WHERE channel_id = ?;", structURL.ID)
+	if err != nil {
+		// Lida com o erro
+	}
+
+	_, err = r.db.Exec("DELETE FROM permission WHERE channel_id = ?;", structURL.ID)
+	if err != nil {
+		// Lida com o erro
+	}
+
+	result, err := r.db.Exec("DELETE FROM channels WHERE id = ? AND users_agent_id = ?;", structURL.ID, structURL.AgentID)
+	if err != nil {
+		// Lida com o erro
+		return false
+	}
+
+	rowsAffected, _ := result.RowsAffected()
+	if rowsAffected == 0 {
+		// Nenhum registro foi deletado
+		return false
+	}
+
+	return true
+}
+
+func (r *AgentRepository) EditChannel(structUpdate models.BodyUpdate) (int, error) {
+	updateSQL := "UPDATE channels SET channel_name=? WHERE id=? AND users_agent_id=?"
+
+	// Executar a instrução SQL
+	_, err := r.db.Exec(updateSQL, structUpdate.NewNameChannel, structUpdate.ID, structUpdate.AgentID)
+	if err != nil {
+		return 0, err
+	}
+	return structUpdate.ID, nil
 }
