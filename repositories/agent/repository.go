@@ -296,6 +296,39 @@ func (r *AgentRepository) GetChannelList(structURL models.StrutcURLGetChannelLis
 	}
 	return bodyChannelsList, nil
 }
+func (r *AgentRepository) GetPermissionChannelList(structURL models.StrutcURLGetChannelList) ([]models.RequestChannelList, error) {
+
+	rows, err := r.db.Query("SELECT id , users_agent_id , channel_name , dt_create_channel    FROM channels WHERE users_agent_id = ? AND dt_create_channel BETWEEN ? AND ?  LIMIT ?,?;",
+		structURL.AgentID, structURL.DateEnd, structURL.DateStart, structURL.Offset, structURL.PageLimit)
+
+	defer rows.Close()
+
+	if err != nil {
+		fmt.Println("\n\n ERRO : ", err.Error())
+		return nil, err
+	}
+	if !rows.Next() {
+		fmt.Println("null")
+		return nil, nil
+	}
+	var bodyChannelsList []models.RequestChannelList
+
+	for rows.Next() {
+
+		var bodyCopyTrader models.RequestChannelList
+		err = rows.Scan(
+			&bodyCopyTrader.ID,
+			&bodyCopyTrader.AgentID,
+			&bodyCopyTrader.ChannelName,
+			&bodyCopyTrader.DateCreate,
+		)
+		if err != nil {
+			return nil, err
+		}
+		bodyChannelsList = append(bodyChannelsList, bodyCopyTrader)
+	}
+	return bodyChannelsList, nil
+}
 
 func (r *AgentRepository) DeleteChannel(structURL models.BodyDelete) bool {
 

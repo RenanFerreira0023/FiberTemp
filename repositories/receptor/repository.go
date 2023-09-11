@@ -187,6 +187,78 @@ func (r *ReceptorRepository) GetisValidLogin(email string) ([]models.QueryBodyUs
 	return users, nil
 }
 
+func (r *ReceptorRepository) GetListReceptor(agentID int) ([]models.QueryBodyUserReceptor, error) {
+	rows, err := r.db.Query("SELECT id, first_name, second_name, email, dt_create_account, dt_expired_account,agent_id FROM users_receptor WHERE agent_id = ?;", agentID)
+	if err != nil {
+		fmt.Println("\n\n ERRO : ", err.Error())
+		return nil, err
+	}
+	defer rows.Close()
+
+	var users []models.QueryBodyUserReceptor
+	for rows.Next() {
+		var user models.QueryBodyUserReceptor
+		err := rows.Scan(
+			&user.ID,
+			&user.FirstName,
+			&user.SecondName,
+			&user.Email,
+			&user.CreateAccount,
+			&user.ExpiredAccount,
+			&user.AgentID,
+		)
+		if err != nil {
+			fmt.Println("\n\n ERRO : ", err.Error())
+			return nil, err
+		}
+		users = append(users, user)
+	}
+
+	if err := rows.Err(); err != nil {
+		fmt.Println("\n\n ERRO : ", err.Error())
+		return nil, err
+	}
+
+	if len(users) == 0 {
+		return nil, fmt.Errorf("Usuário não encontrado")
+	}
+	return users, nil
+}
+
+func (r *ReceptorRepository) DeleteReceptor(id_receptor int, id_agent int) bool {
+
+	result, err := r.db.Exec("DELETE FROM users_receptor WHERE id = ? AND agent_id = ?;", id_receptor, id_agent)
+	if err != nil {
+		// Lida com o erro
+		return false
+	}
+
+	rowsAffected, _ := result.RowsAffected()
+	if rowsAffected == 0 {
+		// Nenhum registro foi deletado
+		return false
+	}
+
+	return true
+}
+
+func (r *ReceptorRepository) EditReceptor(structReceptor models.BodyEditReceptor) (int, bool) {
+	result, err := r.db.Exec("UPDATE users_receptor SET first_name = ?, second_name = ?, email = ? WHERE id = ? AND agent_id = ?;",
+		structReceptor.FirstName, structReceptor.SecondName, structReceptor.Email, structReceptor.ReceptorID, structReceptor.AgentID)
+	if err != nil {
+		// Lida com o erro
+		return 0, false
+	}
+
+	rowsAffected, _ := result.RowsAffected()
+	if rowsAffected == 0 {
+		// Nenhum registro foi alterado
+		return 0, false
+	}
+
+	return structReceptor.ReceptorID, true
+}
+
 func (r *ReceptorRepository) InsertClient(bodyClientReq models.QueryGetUserReceptor) (int, error) {
 	idUserAgent, err := r.checkExistLogin(bodyClientReq.Email)
 
@@ -199,9 +271,9 @@ func (r *ReceptorRepository) InsertClient(bodyClientReq models.QueryGetUserRecep
 	var emailBody = bodyClientReq.Email
 	var dtCreateBody = bodyClientReq.CreateAccount
 	var dtExpiredBody = bodyClientReq.ExpiredAccount
-
-	request, err := r.db.Exec("INSERT INTO users_receptor (first_name, second_name, email, dt_create_account, dt_expired_account)  VALUES (?,?,?,?,?)",
-		firtNameBody, secondNameBody, emailBody, dtCreateBody, dtExpiredBody)
+	var agentID = bodyClientReq.AgentID
+	request, err := r.db.Exec("INSERT INTO users_receptor (first_name, second_name, email, dt_create_account, dt_expired_account , agent_id)  VALUES (?,?,?,?,?,?)",
+		firtNameBody, secondNameBody, emailBody, dtCreateBody, dtExpiredBody, agentID)
 	if err != nil {
 		return 0, fmt.Errorf("Erro ao inserir uma copy no banco de dados  ", err.Error())
 	}

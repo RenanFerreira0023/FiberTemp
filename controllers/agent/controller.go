@@ -235,6 +235,69 @@ func (c *AgentController) UpdateChannel(next http.Handler) http.Handler {
 	})
 }
 
+func (c *AgentController) GetListPermissionChannel(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+		agentID := r.URL.Query().Get("id_agent")
+		agentIDstr, err := strconv.Atoi(agentID)
+		if err != nil {
+			http.Error(w, middleware.ConvertStructError("Erro ao converter a string para int:"+err.Error()), http.StatusInternalServerError)
+			return
+		}
+
+		//	receptorID := r.URL.Query().Get("id_receptor")
+		startDateStr := r.URL.Query().Get("start_date")
+		endDateStr := r.URL.Query().Get("end_date")
+
+		offset := r.URL.Query().Get("page")
+		offsetStr, err := strconv.Atoi(offset)
+		if err != nil {
+			http.Error(w, middleware.ConvertStructError("Erro ao converter a string para int:"+err.Error()), http.StatusInternalServerError)
+			return
+		}
+
+		limitPage := r.URL.Query().Get("limit")
+		limitPageStr, err := strconv.Atoi(limitPage)
+		if err != nil {
+			http.Error(w, middleware.ConvertStructError("Erro ao converter a string para int:"+err.Error()), http.StatusInternalServerError)
+			return
+		}
+
+		var structURL models.StrutcURLGetChannelList
+		structURL.AgentID = agentIDstr
+		structURL.DateStart = startDateStr
+		structURL.DateEnd = endDateStr
+		structURL.Offset = offsetStr
+		structURL.PageLimit = limitPageStr
+		fmt.Println("structURL.AgentID   ", structURL.AgentID)
+		fmt.Println("structURL.startDateStr   ", startDateStr)
+		fmt.Println("structURL.endDateStr   ", endDateStr)
+		fmt.Println("structURL.offsetStr   ", offsetStr)
+		fmt.Println("structURL.limitPageStr   ", limitPageStr)
+
+		//////////////////////
+		//// GET a lista de canal
+		//////////////////////
+		requestChannelList, err := c.repository.GetPermissionChannelList(structURL)
+		if err != nil {
+			http.Error(w, middleware.ConvertStructError(err.Error()), http.StatusInternalServerError)
+			return
+		}
+
+		if len(requestChannelList) > 0 {
+			jsonResponse, err := json.Marshal(requestChannelList)
+			if err != nil {
+				http.Error(w, middleware.ConvertStructError("Trasnformação de json invalido"), http.StatusInternalServerError)
+			}
+			w.Write([]byte(jsonResponse))
+		} else {
+			http.Error(w, middleware.ConvertStructError("Sem dados para retornar"), http.StatusNotFound)
+		}
+		next.ServeHTTP(w, r)
+
+	})
+}
+
 func (c *AgentController) GetListChannel(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 

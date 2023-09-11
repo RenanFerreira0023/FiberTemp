@@ -65,6 +65,7 @@ type QueryBodySendCopy struct {
 
 type QueryBodyUserReceptor struct {
 	ID             int       `json:"id"`
+	AgentID        int       `json:"agent_id"`
 	FirstName      string    `json:"first_name"`
 	SecondName     string    `json:"second_name"`
 	Email          string    `json:"email"`
@@ -74,6 +75,7 @@ type QueryBodyUserReceptor struct {
 
 type QueryGetUserReceptor struct {
 	ID             int    `json:"id"`
+	AgentID        int    `json:"agent_id"`
 	FirstName      string `json:"first_name"`
 	SecondName     string `json:"second_name"`
 	Email          string `json:"email"`
@@ -169,8 +171,21 @@ type BodyDelete struct {
 	AgentID int `json:"user_agent_id"`
 }
 
+type BodyDeleteReceptor struct {
+	ID      int `json:"id_receptor"`
+	AgentID int `json:"id_agent"`
+}
+
 type BodyUpdate struct {
 	ID             int    `json:"id"`
 	AgentID        int    `json:"user_agent_id"`
 	NewNameChannel string `json:"channel_name"`
+}
+
+type BodyEditReceptor struct {
+	AgentID    int    `json:"id_agent"`
+	ReceptorID int    `json:"id_receptor"`
+	FirstName  string `json:"first_name"`
+	SecondName string `json:"second_name"`
+	Email      string `json:"email"`
 }

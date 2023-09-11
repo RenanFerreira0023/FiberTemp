@@ -105,6 +105,67 @@ func NewRouter() http.Handler {
 		}
 	})
 
+	mux.HandleFunc("/Receptor/List/", func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case "OPTIONS":
+			handleOptionsRequest(w, r)
+			return
+		case "GET":
+			middlewareController.CheckAntiDDoS(
+				middlewareController.CheckValidToken(
+					receptorController.CheckURLDatas(
+						receptorController.GetListReceptor(
+							http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+							}))))).ServeHTTP(w, r)
+		default:
+			middlewareController.CheckAntiDDoS(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				http.Error(w, middlewareController.ConvertStructError(http.StatusText(http.StatusMethodNotAllowed)), http.StatusBadRequest)
+			})).ServeHTTP(w, r)
+
+		}
+	})
+
+	mux.HandleFunc("/Receptor/Delete", func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case "OPTIONS":
+			handleOptionsRequest(w, r)
+			return
+		case "DELETE":
+			middlewareController.CheckAntiDDoS(
+				middlewareController.CheckValidToken(
+					receptorController.DeleteReceptor(
+						http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+						})))).ServeHTTP(w, r)
+		default:
+			middlewareController.CheckAntiDDoS(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				http.Error(w, middlewareController.ConvertStructError(http.StatusText(http.StatusMethodNotAllowed)), http.StatusBadRequest)
+			})).ServeHTTP(w, r)
+
+		}
+	})
+
+	mux.HandleFunc("/Receptor/Edit", func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case "OPTIONS":
+			handleOptionsRequest(w, r)
+			return
+		case "PUT":
+			middlewareController.CheckAntiDDoS(
+				middlewareController.CheckValidToken(
+					receptorController.EditReceptor(
+						http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+						})))).ServeHTTP(w, r)
+		default:
+			middlewareController.CheckAntiDDoS(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				http.Error(w, middlewareController.ConvertStructError(http.StatusText(http.StatusMethodNotAllowed)), http.StatusBadRequest)
+			})).ServeHTTP(w, r)
+
+		}
+	})
+
 	mux.HandleFunc("/Copy/Find/", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case "OPTIONS":
@@ -232,6 +293,27 @@ func NewRouter() http.Handler {
 				middlewareController.CheckValidToken(
 					agentController.CheckURLDatas(
 						agentController.GetListChannel(
+							http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+							}))))).ServeHTTP(w, r)
+		default:
+			middlewareController.CheckAntiDDoS(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				http.Error(w, middlewareController.ConvertStructError(http.StatusText(http.StatusMethodNotAllowed)), http.StatusBadRequest)
+			})).ServeHTTP(w, r)
+
+		}
+	})
+
+	mux.HandleFunc("/Channel/Permission/List/", func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case "OPTIONS":
+			handleOptionsRequest(w, r)
+			return
+		case "GET":
+			middlewareController.CheckAntiDDoS(
+				middlewareController.CheckValidToken(
+					agentController.CheckURLDatas(
+						agentController.GetListPermissionChannel(
 							http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 							}))))).ServeHTTP(w, r)

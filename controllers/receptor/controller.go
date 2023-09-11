@@ -249,6 +249,112 @@ func (c *ReceptorController) CheckURLDatas(next http.Handler) http.Handler {
 
 	})
 }
+
+func (c *ReceptorController) GetListReceptor(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		agentID := r.URL.Query().Get("id_agent")
+		if agentID == "" {
+			http.Error(w, middleware.ConvertStructError("Agent id inválido"), http.StatusForbidden)
+			return
+		}
+		agentIDNum, _ := strconv.Atoi(agentID)
+		strReq200, err := c.repository.GetListReceptor(agentIDNum)
+		if err != nil {
+			http.Error(w, middleware.ConvertStructError(err.Error()), http.StatusInternalServerError)
+			return
+		}
+
+		jsonResponse, err := json.Marshal(strReq200)
+		if err != nil {
+			http.Error(w, middleware.ConvertStructError("Trasnformação de json invalido"), http.StatusInternalServerError)
+		}
+		w.Write([]byte(jsonResponse))
+
+		next.ServeHTTP(w, r)
+	})
+}
+
+func (c *ReceptorController) DeleteReceptor(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+		var deleteReceptor models.BodyDeleteReceptor
+		if err := json.NewDecoder(r.Body).Decode(&deleteReceptor); err != nil {
+			http.Error(w, middleware.ConvertStructError(err.Error()), http.StatusBadRequest)
+			return
+		}
+
+		if !middlewareController.IsValidInput("number", fmt.Sprint(deleteReceptor.ID)) {
+			http.Error(w, middlewareController.ConvertStructError(fmt.Sprintf("Valor inválido para o parâmetro '%s': %s", "number", fmt.Sprint(deleteReceptor.ID))), http.StatusBadRequest)
+			return
+		}
+
+		if !middlewareController.IsValidInput("number", fmt.Sprint(deleteReceptor.AgentID)) {
+			http.Error(w, middlewareController.ConvertStructError(fmt.Sprintf("Valor inválido para o parâmetro '%s': %s", "number", fmt.Sprint(deleteReceptor.AgentID))), http.StatusBadRequest)
+			return
+		}
+
+		strReq200 := c.repository.DeleteReceptor(deleteReceptor.ID, deleteReceptor.AgentID)
+		if strReq200 == false {
+			http.Error(w, middleware.ConvertStructError("Houve um problema ao deletar o Receptor"), http.StatusInternalServerError)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+
+	})
+}
+
+func (c *ReceptorController) EditReceptor(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+		var editReceptor models.BodyEditReceptor
+		if err := json.NewDecoder(r.Body).Decode(&editReceptor); err != nil {
+			http.Error(w, middleware.ConvertStructError(err.Error()), http.StatusBadRequest)
+			return
+		}
+
+		if !middlewareController.IsValidInput("number", fmt.Sprint(editReceptor.ReceptorID)) {
+			http.Error(w, middlewareController.ConvertStructError(fmt.Sprintf("Valor inválido para o parâmetro '%s': %s", "number", fmt.Sprint(editReceptor.ReceptorID))), http.StatusBadRequest)
+			return
+		}
+
+		if !middlewareController.IsValidInput("number", fmt.Sprint(editReceptor.AgentID)) {
+			http.Error(w, middlewareController.ConvertStructError(fmt.Sprintf("Valor inválido para o parâmetro '%s': %s", "number", fmt.Sprint(editReceptor.AgentID))), http.StatusBadRequest)
+			return
+		}
+
+		if !middlewareController.IsValidInput("name", editReceptor.FirstName) {
+			http.Error(w, middlewareController.ConvertStructError(fmt.Sprintf("Valor inválido para o parâmetro '%s': %s", "name", editReceptor.FirstName)), http.StatusBadRequest)
+			return
+		}
+
+		if !middlewareController.IsValidInput("name", editReceptor.SecondName) {
+			http.Error(w, middlewareController.ConvertStructError(fmt.Sprintf("Valor inválido para o parâmetro '%s': %s", "name", editReceptor.SecondName)), http.StatusBadRequest)
+			return
+		}
+
+		if !middlewareController.IsValidInput("email", editReceptor.Email) {
+			http.Error(w, middlewareController.ConvertStructError(fmt.Sprintf("Valor inválido para o parâmetro '%s': %s", "email", editReceptor.Email)), http.StatusBadRequest)
+			return
+		}
+
+		_, err := c.repository.EditReceptor(editReceptor)
+		if err == false {
+			http.Error(w, middleware.ConvertStructError("Houve um problema ao deletar o Receptor"), http.StatusInternalServerError)
+			return
+		}
+
+		jsonResponse, errJson := json.Marshal(editReceptor)
+		if errJson != nil {
+			http.Error(w, middleware.ConvertStructError("Trasnformação de json invalido"), http.StatusInternalServerError)
+		}
+		w.Write([]byte(jsonResponse))
+
+		next.ServeHTTP(w, r)
+
+	})
+}
+
 func (c *ReceptorController) CheckUserExist(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
@@ -275,6 +381,11 @@ func (c *ReceptorController) InsertReceptor(next http.Handler) http.Handler {
 		var receptorBody models.QueryGetUserReceptor
 		if err := json.NewDecoder(r.Body).Decode(&receptorBody); err != nil {
 			http.Error(w, middleware.ConvertStructError(err.Error()), http.StatusBadRequest)
+			return
+		}
+
+		if !middlewareController.IsValidInput("number", fmt.Sprint(receptorBody.AgentID)) {
+			http.Error(w, middlewareController.ConvertStructError(fmt.Sprintf("Valor inválido para o parâmetro '%s': %s", "number", receptorBody.AgentID)), http.StatusBadRequest)
 			return
 		}
 
