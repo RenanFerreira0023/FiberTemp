@@ -242,6 +242,23 @@ func (r *ReceptorRepository) DeleteReceptor(id_receptor int, id_agent int) bool 
 	return true
 }
 
+func (r *ReceptorRepository) DeleteChannelPermissionReceptor(id_receptor int, channelID int) bool {
+
+	result, err := r.db.Exec("DELETE FROM permission  WHERE user_receptor_id = ? AND channel_id = ?;", id_receptor, channelID)
+	if err != nil {
+		// Lida com o erro
+		return false
+	}
+
+	rowsAffected, _ := result.RowsAffected()
+	if rowsAffected == 0 {
+		// Nenhum registro foi deletado
+		return false
+	}
+
+	return true
+}
+
 func (r *ReceptorRepository) EditReceptor(structReceptor models.BodyEditReceptor) (int, bool) {
 	result, err := r.db.Exec("UPDATE users_receptor SET first_name = ?, second_name = ?, email = ? WHERE id = ? AND agent_id = ?;",
 		structReceptor.FirstName, structReceptor.SecondName, structReceptor.Email, structReceptor.ReceptorID, structReceptor.AgentID)

@@ -1,0 +1,678 @@
+{
+	"info": {
+		"_postman_id": "310bd85e-351f-4289-ad84-1b354c21d602",
+		"name": "RDS API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "5238246",
+		"_collection_link": "https://cloudy-flare-31979.postman.co/workspace/testes~50cce089-eb3d-49d4-a4ee-131a349911e2/collection/5238246-310bd85e-351f-4289-ad84-1b354c21d602?action=share&source=collection_link&creator=5238246"
+	},
+	"item": [
+		{
+			"name": "[ LOADBAL ] /Heath",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{HOST}}/Health",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"Health"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[ AGENTE ___] /Agent/Auth/",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "NLt-Ags4xTPC90RzQf1bFFr4_92SywD3MZKowo4F6JRZjsCD4mVmoU2MY_APAEMXoTK4ioaXW8yKAxBYDU6a7A==",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "{{HOST}}/Agent/Auth/?login=renan234@msn.com",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"Agent",
+						"Auth",
+						""
+					],
+					"query": [
+						{
+							"key": "login",
+							"value": "renan234@msn.com"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[ AGENTE ___] /Agent/Login/mt5/",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{TOKEN}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": []
+				},
+				"url": {
+					"raw": "{{HOST}}/Agent/Login/mt5/?login=admin@rdstrader.com&channel=Canal33",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"Agent",
+						"Login",
+						"mt5",
+						""
+					],
+					"query": [
+						{
+							"key": "login",
+							"value": "admin@rdstrader.com"
+						},
+						{
+							"key": "channel",
+							"value": "Canal33"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[ AGENTE ___] /Channel/List/",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{TOKEN}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{HOST}}/Channel/List/?id_agent=1&end_date=2021-05-22 01:18:42&start_date=2025-05-22 01:12:42&page=0&limit=30",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"Channel",
+						"List",
+						""
+					],
+					"query": [
+						{
+							"key": "id_agent",
+							"value": "1"
+						},
+						{
+							"key": "end_date",
+							"value": "2021-05-22 01:18:42"
+						},
+						{
+							"key": "start_date",
+							"value": "2025-05-22 01:12:42"
+						},
+						{
+							"key": "page",
+							"value": "0"
+						},
+						{
+							"key": "limit",
+							"value": "30"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[ AGENTE ___]  /Channel/Permission/List/",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{TOKEN}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{HOST}}/Channel/Permission/List/?id_agent=1&end_date=2021-05-22 01:18:42&start_date=2025-05-22 01:12:42&page=0&limit=30",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"Channel",
+						"Permission",
+						"List",
+						""
+					],
+					"query": [
+						{
+							"key": "id_agent",
+							"value": "1"
+						},
+						{
+							"key": "end_date",
+							"value": "2021-05-22 01:18:42"
+						},
+						{
+							"key": "start_date",
+							"value": "2025-05-22 01:12:42"
+						},
+						{
+							"key": "page",
+							"value": "0"
+						},
+						{
+							"key": "limit",
+							"value": "30"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[ RECEPTOR ] /Repector/Auth/",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODM0MDUyNDgsInVzZXJuYW1lIjoiam9obmRvZSJ9.prvO0h48Dxcm6dP-RUnr-eCuOojJO5TDI05EGil5sgI",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"url": {
+					"raw": "{{HOST}}/Repector/Auth/?login=mariajuana@hotmail.com",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"Repector",
+						"Auth",
+						""
+					],
+					"query": [
+						{
+							"key": "login",
+							"value": "mariajuana@hotmail.com"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[ RECEPTOR ] /Receptor/Login/mt5/",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{TOKEN}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{HOST}}/Receptor/Login/mt5/?login=igormello016@gmail.com&emailAgent=admin@rdstrader.com&channel=Canal33",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"Receptor",
+						"Login",
+						"mt5",
+						""
+					],
+					"query": [
+						{
+							"key": "login",
+							"value": "igormello016@gmail.com"
+						},
+						{
+							"key": "emailAgent",
+							"value": "admin@rdstrader.com"
+						},
+						{
+							"key": "channel",
+							"value": "Canal33"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[ RECEPTOR ] /Repector/List/",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{TOKEN}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{HOST}}/Receptor/List/?id_agent=7",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"Receptor",
+						"List",
+						""
+					],
+					"query": [
+						{
+							"key": "id_agent",
+							"value": "7"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[ RECEPTOR ] /Copy/Find/",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODU1MDM3MDUsInVzZXJuYW1lIjoiUmVuYW5EdXRyYSJ9.GTZLcMInjDiSrcvHb6HG5W15lqFlxkXTKgkXBqnD46U",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{HOST}}/Copy/Find/?id_agent=1&id_channel=8&id_receptor=1&end_date=2023-05-22 01:18:42&start_date=2023-05-22 01:12:42&page=0&limit=30",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"Copy",
+						"Find",
+						""
+					],
+					"query": [
+						{
+							"key": "id_agent",
+							"value": "1"
+						},
+						{
+							"key": "id_channel",
+							"value": "8"
+						},
+						{
+							"key": "id_receptor",
+							"value": "1"
+						},
+						{
+							"key": "end_date",
+							"value": "2023-05-22 01:18:42"
+						},
+						{
+							"key": "start_date",
+							"value": "2023-05-22 01:12:42"
+						},
+						{
+							"key": "page",
+							"value": "0"
+						},
+						{
+							"key": "limit",
+							"value": "30"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[ AGENTE ___] /Agent/Login/Adm",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{TOKEN}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"login\":\"renan234@msn.com\",\r\n    \"password\":\"55a5e9e78207b4df8699d60886fa070079463547b095d1a05bc719bb4e6cd251\"\r\n}"
+				},
+				"url": {
+					"raw": "{{HOST}}/Agent/Login/Adm",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"Agent",
+						"Login",
+						"Adm"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[ AGENTE ___] /Agent/Create",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{TOKEN}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"first_name\": \"Renan\",\r\n  \"second_name\": \"Dutra\",\r\n  \"email\": \"renan234@msn.com\",\r\n  \"password_agent\": \"5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8\",\r\n  \"dt_create_account\": \"2023-06-01 21:00:01\",\r\n  \"dt_expired_account\": \"2023-07-01 13:00:01\",\r\n  \"account_valid\": true,\r\n  \"quantity_alerts\": 3,\r\n  \"quantity_account_copy\": 5\r\n}\r\n"
+				},
+				"url": {
+					"raw": "{{HOST}}/Agent/Create",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"Agent",
+						"Create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[ AGENTE ___] /Channel/Create",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{TOKEN}}",
+						"type": "text"
+					},
+					{
+						"key": "",
+						"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2ODQ1MjU3ODQsInVzZXJuYW1lIjoiUmVuYW5EdXRyYSJ9.Iy7YmM7m0aa4N38AoIHJOgCwwg9hOtJi953NkMyM6Dc",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"channel_name\": \"Bet_da_galera_23\",\r\n  \"users_agent_id\": 33,\r\n  \"dt_create_channel\": \"2023-06-01 20:00:01\"\r\n}\r\n\r\n"
+				},
+				"url": {
+					"raw": "{{HOST}}/Channel/Create",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"Channel",
+						"Create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[ AGENTE ___] /Channel/Permission/Insert",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{TOKEN}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"user_receptor_id\": 1,\r\n  \"channel_id\": 3\r\n}\r\n"
+				},
+				"url": {
+					"raw": "{{HOST}}/Channel/Permission/Insert",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"Channel",
+						"Permission",
+						"Insert"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[ AGENTE ___] /Copy/Send",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{TOKEN}}",
+						"type": "text"
+					},
+					{
+						"key": "teste",
+						"value": "234",
+						"type": "text",
+						"disabled": true
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"symbol\": \"BTCUSD\",\r\n    \"action_type\": \"ORDER_PEDDING\",\r\n    \"ticket\": 976543234322452233,\r\n    \"lot\": 0.2,\r\n    \"target_pedding\": 12754.0,\r\n    \"takeprofit\": 0,\r\n    \"stoploss\": 0,\r\n    \"dt_send_order\": \"2023-05-17 13:00:01\" ,\r\n    \"user_agent_id\": 1,\r\n    \"channel_id\": 1\r\n}\r\n"
+				},
+				"url": {
+					"raw": "{{HOST}}/Copy/Send",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"Copy",
+						"Send"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[ RECEPTOR ] /Copy/Reply",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{TOKEN}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"all_copy_id\": 2,\r\n  \"users_receptor_id\": 2,\r\n  \"channel_id\": 2,\r\n  \"dt_send_copy\": \"2023-05-17 13:50:01\"\r\n}\r\n"
+				},
+				"url": {
+					"raw": "{{HOST}}/Copy/Reply",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"Copy",
+						"Reply"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[ RECEPTOR ] /Receptor/Create",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{TOKEN}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"agent_id\": 7,\r\n    \"first_name\": \"Neymar\",\r\n    \"second_name\": \"Junior\",\r\n    \"email\": \"meninonay@gmail.com\",\r\n    \"dt_create_account\": \"2023-08-13 23:02:22\",\r\n    \"dt_expired_account\": \"2073-08-13 23:02:22\"\r\n}"
+				},
+				"url": {
+					"raw": "{{HOST}}/Receptor/Create",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"Receptor",
+						"Create"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[ RECEPTOR ] /Receptor/Delete",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{TOKEN}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id_receptor\" : 10,\r\n    \"id_agent\" : 7\r\n}"
+				},
+				"url": {
+					"raw": "{{HOST}}/Receptor/Delete",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"Receptor",
+						"Delete"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[ AGENTE ___] /Channel/Delete",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{TOKEN}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n        \"id\":18,\r\n        \"user_agent_id\":1\r\n}"
+				},
+				"url": {
+					"raw": "{{HOST}}/Channel/Delete",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"Channel",
+						"Delete"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[ AGENTE ___] /Channels/Update",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{TOKEN}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id\": 55,\r\n    \"user_agent_id\" : 7,\r\n    \"channel_name\" : \"\"\r\n}"
+				},
+				"url": {
+					"raw": "{{HOST}}/Channel/Update",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"Channel",
+						"Update"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "[ RECEPTOR ] /Receptor/Edit",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{TOKEN}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"id_agent\": 7,\r\n    \"id_receptor\": 27,\r\n    \"first_name\": \"Neymar\",\r\n    \"second_name\": \"Junior\",\r\n    \"email\": \"meninonay2@gmail.com\"\r\n}\r\n"
+				},
+				"url": {
+					"raw": "{{HOST}}/Receptor/Edit",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"Receptor",
+						"Edit"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

@@ -155,10 +155,11 @@ type StrutcURLGetChannelList struct {
 }
 
 type RequestChannelList struct {
-	ID          int       `json:"id"`
-	AgentID     int       `json:"user_agent_id"`
-	ChannelName string    `json:"channel_name"`
-	DateCreate  time.Time `json:"dt_create_channel"`
+	ID                int       `json:"id"`
+	AgentID           int       `json:"user_agent_id"`
+	ChannelName       string    `json:"channel_name"`
+	DateCreate        time.Time `json:"dt_create_channel"`
+	TotalReceptorCopy int       `json:"total_receptor_copy"`
 }
 
 type BodyPostLoginAdm struct {
@@ -176,6 +177,11 @@ type BodyDeleteReceptor struct {
 	AgentID int `json:"id_agent"`
 }
 
+type BodyDeleteChannelPermissionReceptor struct {
+	ReceptorID int `json:"id_receptor"`
+	ChannelID  int `json:"channel_id"`
+}
+
 type BodyUpdate struct {
 	ID             int    `json:"id"`
 	AgentID        int    `json:"user_agent_id"`
@@ -188,4 +194,18 @@ type BodyEditReceptor struct {
 	FirstName  string `json:"first_name"`
 	SecondName string `json:"second_name"`
 	Email      string `json:"email"`
+}
+
+type RequestPermissionRequest struct {
+	ID         int    `json:"id"`
+	FirstName  string `json:"first_name"`
+	SecondName string `json:"second_name"`
+	Email      string `json:"email"`
+	ChannelID  int    `json:"channel_id"`
+}
+
+type RequestInformationChannel struct {
+	NameChannel       string `json:"name_channel"`
+	DateCreateChannel string `json:"dt_create_channel"`
+	CountCopy         int    `json:"count_copy"`
 }

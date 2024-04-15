@@ -48,13 +48,13 @@ func NewDB() *sql.DB {
 // isso aqui precisa ir para o repository
 func CreateTables(db *sql.DB, emailAdmin string) {
 
-	createTableAgent := "CREATE TABLE IF NOT EXISTS users_agent (  id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,  first_name VARCHAR(200),  second_name VARCHAR(200),  email VARCHAR(150),  dt_create_account DATETIME,  dt_expired_account DATETIME,  account_valid BOOLEAN,  quantity_alerts INT(100),  quantity_account_copy INT(100))"
+	createTableAgent := "CREATE TABLE IF NOT EXISTS users_agent (  id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,  first_name VARCHAR(200),  second_name VARCHAR(200),  email VARCHAR(150),  password_agent VARCHAR(64), dt_create_account DATETIME,  dt_expired_account DATETIME,  account_valid BOOLEAN,  quantity_alerts INT(100),  quantity_account_copy INT(100))"
 	_, errTbAgent := db.Exec(createTableAgent)
 	if errTbAgent != nil {
 		panic(errTbAgent)
 	}
 
-	createTableReceptor := "CREATE TABLE IF NOT EXISTS users_receptor (  id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,  first_name VARCHAR(200),  second_name VARCHAR(200),  email VARCHAR(150),  dt_create_account DATETIME,  dt_expired_account DATETIME)"
+	createTableReceptor := "CREATE TABLE users_receptor (  id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,  first_name VARCHAR(200),  second_name VARCHAR(200),  email VARCHAR(150),  dt_create_account DATETIME,  dt_expired_account DATETIME,  agent_id INT,    FOREIGN KEY (agent_id) REFERENCES users_agent(id)  )"
 	_, errTbReceptor := db.Exec(createTableReceptor)
 	if errTbReceptor != nil {
 		panic(errTbReceptor)

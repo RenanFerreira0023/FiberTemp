@@ -26,11 +26,11 @@ func NewAgentController(repository *repositories.AgentRepository) *AgentControll
 func (a *AgentController) InsertPermissionChannel(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var bodyPermission models.QueryBodyInsertPermission
+
 		if err := json.NewDecoder(r.Body).Decode(&bodyPermission); err != nil {
 			http.Error(w, middleware.ConvertStructError(err.Error()), http.StatusBadRequest)
 			return
 		}
-
 		if !middlewareController.IsValidInput("number", fmt.Sprint(bodyPermission.UserReceptorID)) {
 			http.Error(w, middlewareController.ConvertStructError(fmt.Sprintf("Valor inválido para o parâmetro '%s': %s", "number", fmt.Sprint(bodyPermission.UserReceptorID))), http.StatusBadRequest)
 			return
@@ -178,6 +178,39 @@ func (a *AgentController) CreateChannel(next http.Handler) http.Handler {
 	})
 }
 
+func (c *AgentController) GetInformationChannel(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		channel_id := (r.URL.Query().Get("channel_id"))
+		channelIDInt, err := strconv.Atoi(channel_id)
+		if err != nil {
+			http.Error(w, middleware.ConvertStructError("Erro ao converter a string para int:"+err.Error()), http.StatusInternalServerError)
+			return
+		}
+		/*
+			_, requestDelete := c.repository.GetInformationChannel((channelIDInt))
+			if requestDelete != nil {
+				http.Error(w, middleware.ConvertStructError("Houve um problema ao trazer os dados do canal"), http.StatusInternalServerError)
+				return
+			}
+		*/
+
+		//////////
+		requestChannelList, err := c.repository.GetInformationChannel(channelIDInt)
+		if err != nil {
+			http.Error(w, middleware.ConvertStructError(err.Error()), http.StatusInternalServerError)
+			return
+		}
+
+		jsonResponse, err := json.Marshal(requestChannelList)
+		if err != nil {
+			http.Error(w, middleware.ConvertStructError("Trasnformação de json invalido"), http.StatusInternalServerError)
+		}
+		w.Write([]byte(jsonResponse))
+		//		next.ServeHTTP(w, r)
+
+	})
+}
+
 func (c *AgentController) DeleteChannel(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		var bodyDelete models.BodyDelete
@@ -295,6 +328,62 @@ func (c *AgentController) GetListPermissionChannel(next http.Handler) http.Handl
 		}
 		next.ServeHTTP(w, r)
 
+	})
+}
+
+//
+
+func (c *AgentController) GetReceptorsOutListPermission(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		channel_id := r.URL.Query().Get("channel_id")
+		//////////////////////
+		//// GET a lista de receptor permitidos
+		//////////////////////
+		fmt.Print("channel_id      " + channel_id)
+		requestChannelListOut, err := c.repository.GetPermissionListOutReceptor(channel_id)
+		if err != nil {
+			http.Error(w, middleware.ConvertStructError(err.Error()), http.StatusInternalServerError)
+			return
+		}
+
+		if len(requestChannelListOut) > 0 {
+			jsonResponse, err := json.Marshal(requestChannelListOut)
+			if err != nil {
+				http.Error(w, middleware.ConvertStructError("Trasnformação de json invalido"), http.StatusInternalServerError)
+			}
+			fmt.Print(jsonResponse)
+			w.Write([]byte(jsonResponse))
+		} else {
+			http.Error(w, middleware.ConvertStructError("Sem dados para retornar"), http.StatusNotFound)
+		}
+
+		next.ServeHTTP(w, r)
+	})
+}
+
+func (c *AgentController) GetPermissionListReceptor(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		channel_id := r.URL.Query().Get("channel_id")
+		//////////////////////
+		//// GET a lista de receptor permitidos
+		//////////////////////
+
+		requestChannelList, err := c.repository.GetPermissionListReceptor(channel_id)
+		if err != nil {
+			http.Error(w, middleware.ConvertStructError(err.Error()), http.StatusInternalServerError)
+			return
+		}
+
+		if len(requestChannelList) > 0 {
+			jsonResponse, err := json.Marshal(requestChannelList)
+			if err != nil {
+				http.Error(w, middleware.ConvertStructError("Trasnformação de json invalido"), http.StatusInternalServerError)
+			}
+			w.Write([]byte(jsonResponse))
+		} else {
+			http.Error(w, middleware.ConvertStructError("Sem dados para retornar"), http.StatusNotFound)
+		}
+		next.ServeHTTP(w, r)
 	})
 }
 

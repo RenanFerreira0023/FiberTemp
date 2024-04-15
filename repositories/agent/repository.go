@@ -263,6 +263,77 @@ func (r *AgentRepository) InsertClient(bodyClientReq models.QueryBodyUsersAgent)
 	return int(insertID), nil
 }
 
+func (r *AgentRepository) GetPermissionListOutReceptor(channelID string) ([]models.RequestPermissionRequest, error) {
+	//	rows, err := r.db.Query("SELECT id, first_name, second_name, email FROM users_receptor WHERE id IN (SELECT id FROM permission WHERE channel_id = ?);", channelID)
+	rows, err := r.db.Query("SELECT ur.id, ur.first_name, ur.second_name, ur.email FROM users_receptor AS ur LEFT JOIN Permission AS p ON ur.ID = p.user_receptor_id WHERE p.user_receptor_id IS NULL OR (p.channel_id IS NOT NULL AND p.channel_id != ?); ", channelID)
+
+	if err != nil {
+		fmt.Println("\n\n ERRO : ", err.Error())
+		return nil, err
+	}
+
+	//	if !rows.Next() {
+	//		fmt.Println("null")
+	//		return nil, nil
+	//	}
+	defer rows.Close()
+
+	var bodyChannelsList []models.RequestPermissionRequest
+
+	for rows.Next() {
+		var bodyCopyTrader models.RequestPermissionRequest
+		err = rows.Scan(
+			&bodyCopyTrader.ID,
+			&bodyCopyTrader.FirstName,
+			&bodyCopyTrader.SecondName,
+			&bodyCopyTrader.Email)
+		if err != nil {
+			return nil, err
+		}
+		bodyChannelsList = append(bodyChannelsList, bodyCopyTrader)
+	}
+
+	return bodyChannelsList, nil
+}
+
+func (r *AgentRepository) GetPermissionListReceptor(channelID string) ([]models.RequestPermissionRequest, error) {
+	msgQuery := ""
+	msgQuery += " SELECT  users_receptor.id,  users_receptor.first_name,  users_receptor.second_name,  users_receptor.email,   permission.channel_id"
+	msgQuery += " FROM    users_receptor "
+	msgQuery += " JOIN    permission ON users_receptor.id = permission.user_receptor_id"
+	msgQuery += " WHERE   permission.channel_id = ?;"
+	rows, err := r.db.Query(msgQuery, channelID)
+
+	if err != nil {
+		fmt.Println("\n\n ERRO : ", err.Error())
+		return nil, err
+	}
+
+	//	if !rows.Next() {
+	//		fmt.Println("null")
+	//		return nil, nil
+	//	}
+	defer rows.Close()
+
+	var bodyChannelsList []models.RequestPermissionRequest
+
+	for rows.Next() {
+		var bodyCopyTrader models.RequestPermissionRequest
+		err = rows.Scan(
+			&bodyCopyTrader.ID,
+			&bodyCopyTrader.FirstName,
+			&bodyCopyTrader.SecondName,
+			&bodyCopyTrader.Email,
+			&bodyCopyTrader.ChannelID)
+		if err != nil {
+			return nil, err
+		}
+		bodyChannelsList = append(bodyChannelsList, bodyCopyTrader)
+	}
+
+	return bodyChannelsList, nil
+}
+
 func (r *AgentRepository) GetChannelList(structURL models.StrutcURLGetChannelList) ([]models.RequestChannelList, error) {
 
 	rows, err := r.db.Query("SELECT id , users_agent_id , channel_name , dt_create_channel    FROM channels WHERE users_agent_id = ? AND dt_create_channel BETWEEN ? AND ?  LIMIT ?,?;",
@@ -298,9 +369,22 @@ func (r *AgentRepository) GetChannelList(structURL models.StrutcURLGetChannelLis
 }
 func (r *AgentRepository) GetPermissionChannelList(structURL models.StrutcURLGetChannelList) ([]models.RequestChannelList, error) {
 
-	rows, err := r.db.Query("SELECT id , users_agent_id , channel_name , dt_create_channel    FROM channels WHERE users_agent_id = ? AND dt_create_channel BETWEEN ? AND ?  LIMIT ?,?;",
+	msgQuery := ""
+	msgQuery += " SELECT  c.id,  c.users_agent_id,  c.channel_name,  c.dt_create_channel,"
+	msgQuery += " (SELECT COUNT(*) FROM Permission p WHERE p.channel_id = c.id) AS total_receptor_copy"
+	msgQuery += " FROM  channels c"
+	msgQuery += " WHERE  c.users_agent_id = ?"
+	msgQuery += " AND c.dt_create_channel BETWEEN ? AND ?"
+	msgQuery += " LIMIT ?,?"
+	//	msgQuery := "SELECT id , users_agent_id , channel_name , dt_create_channel    FROM channels WHERE users_agent_id = ? AND dt_create_channel BETWEEN ? AND ?  LIMIT ?,?;"
+	rows, err := r.db.Query(msgQuery,
 		structURL.AgentID, structURL.DateEnd, structURL.DateStart, structURL.Offset, structURL.PageLimit)
-
+	fmt.Println(msgQuery)
+	fmt.Println("structURL.AgentID   " + strconv.Itoa(structURL.AgentID))
+	fmt.Println("structURL.DateEnd   " + structURL.DateEnd)
+	fmt.Println("structURL.DateStart   " + structURL.DateStart)
+	fmt.Println("structURL.Offset   " + strconv.Itoa(structURL.Offset))
+	fmt.Println("structURL.PageLimit   " + strconv.Itoa(structURL.PageLimit))
 	defer rows.Close()
 
 	if err != nil {
@@ -321,6 +405,7 @@ func (r *AgentRepository) GetPermissionChannelList(structURL models.StrutcURLGet
 			&bodyCopyTrader.AgentID,
 			&bodyCopyTrader.ChannelName,
 			&bodyCopyTrader.DateCreate,
+			&bodyCopyTrader.TotalReceptorCopy,
 		)
 		if err != nil {
 			return nil, err
@@ -328,6 +413,33 @@ func (r *AgentRepository) GetPermissionChannelList(structURL models.StrutcURLGet
 		bodyChannelsList = append(bodyChannelsList, bodyCopyTrader)
 	}
 	return bodyChannelsList, nil
+}
+
+func (r *AgentRepository) GetInformationChannel(channelID int) (models.RequestInformationChannel, error) {
+	// Preparar a declaração SQL
+	query := `
+        SELECT
+            c.channel_name,
+            c.dt_create_channel,
+            (SELECT COUNT(*) FROM all_copy ac WHERE ac.channel_id = c.id) AS count_channel
+        FROM
+            channels c
+        WHERE
+            c.id = ?;
+    `
+
+	// Executar a consulta SQL e recuperar os resultados
+	var result models.RequestInformationChannel
+	err := r.db.QueryRow(query, channelID).Scan(
+		&result.NameChannel,
+		&result.DateCreateChannel,
+		&result.CountCopy,
+	)
+	if err != nil {
+		return models.RequestInformationChannel{}, err
+	}
+
+	return result, nil
 }
 
 func (r *AgentRepository) DeleteChannel(structURL models.BodyDelete) bool {

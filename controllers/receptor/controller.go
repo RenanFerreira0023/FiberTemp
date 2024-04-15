@@ -22,6 +22,35 @@ func NewReceptorController(repository *repositories.ReceptorRepository) *Recepto
 	return &ReceptorController{repository: repository}
 }
 
+func (c *ReceptorController) DeletePermissionChannelReceptor(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// pegar no body
+		var deleteReceptor models.BodyDeleteChannelPermissionReceptor
+		if err := json.NewDecoder(r.Body).Decode(&deleteReceptor); err != nil {
+			http.Error(w, middleware.ConvertStructError(err.Error()), http.StatusBadRequest)
+			return
+		}
+
+		if !middlewareController.IsValidInput("number", fmt.Sprint(deleteReceptor.ReceptorID)) {
+			http.Error(w, middlewareController.ConvertStructError(fmt.Sprintf("Valor inválido para o parâmetro '%s': %s", "number", fmt.Sprint(deleteReceptor.ReceptorID))), http.StatusBadRequest)
+			return
+		}
+
+		if !middlewareController.IsValidInput("number", fmt.Sprint(deleteReceptor.ChannelID)) {
+			http.Error(w, middlewareController.ConvertStructError(fmt.Sprintf("Valor inválido para o parâmetro '%s': %s", "number", fmt.Sprint(deleteReceptor.ChannelID))), http.StatusBadRequest)
+			return
+		}
+
+		strReq200 := c.repository.DeleteChannelPermissionReceptor(deleteReceptor.ReceptorID, deleteReceptor.ChannelID)
+		if strReq200 == false {
+			http.Error(w, middleware.ConvertStructError("Houve um problema ao deletar o Receptor"), http.StatusInternalServerError)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
+}
+
 func (c *ReceptorController) SendReqCopy(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
