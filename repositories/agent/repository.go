@@ -84,6 +84,17 @@ func (r *AgentRepository) SendCopy(bodyCopy models.QueryBodySendCopy) (int, erro
 	return int(insertID), nil
 }
 
+func (r *AgentRepository) SetNewPasswordAgent(body models.BodyPasswordAgent) (bool, error) {
+	// update
+	//
+	_, err := r.db.Exec("UPDATE users_agent SET password_agent = ? WHERE id = ?;", body.PasswordAgent, body.ID)
+	if err != nil {
+		fmt.Println("\n\n ERRO : ", err.Error())
+		return false, err
+	}
+	return true, nil
+}
+
 func (r *AgentRepository) GetAgentFromEmailAndChannel(email string, channel string) (models.QueryGetLogin, error) {
 	var idAgent int
 	var idChannel int
@@ -140,6 +151,30 @@ func (r *AgentRepository) InsertChannel(bodyChannelReq models.QueryBodyCreateCha
 	return int(insertID), nil
 }
 
+//
+
+func (r *AgentRepository) RemovePasswordAgent(emailAgent string) (models.RequestPasswordExist, error) {
+
+	_, err := r.db.Exec("UPDATE users_agent SET password_agent = NULL WHERE email = ? AND password_agent IS NOT NULL", emailAgent)
+	if err != nil {
+		fmt.Println("\n\n ERRO : ", err.Error())
+		return models.RequestPasswordExist{}, err
+	}
+
+	row := r.db.QueryRow("SELECT id, first_name, email FROM users_agent WHERE email = ?", emailAgent)
+	var user models.RequestPasswordExist
+	err = row.Scan(&user.ID, &user.FirstName, &user.Email)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return models.RequestPasswordExist{}, nil // Não encontrou nenhum registro correspondente
+		}
+		fmt.Println("\n\n ERRO : ", err.Error())
+		return models.RequestPasswordExist{}, err
+	}
+
+	return user, nil
+}
+
 func (r *AgentRepository) GetisValidLoginAdm(bodyLogin models.BodyPostLoginAdm) ([]models.QueryGetUsersAgent, error) {
 	rows, err := r.db.Query("SELECT id, first_name, second_name, email, password_agent, dt_create_account, dt_expired_account, account_valid, quantity_alerts, quantity_account_copy FROM users_agent WHERE email = ? ", bodyLogin.Login)
 	if err != nil {
@@ -178,15 +213,19 @@ func (r *AgentRepository) GetisValidLoginAdm(bodyLogin models.BodyPostLoginAdm) 
 	if len(users) == 0 {
 		return nil, fmt.Errorf("Usuário não encontrado")
 	}
-	if users[0].PasswordAgent != bodyLogin.Password {
-		return nil, fmt.Errorf("Senha inválida")
-	}
-
+	/*
+		fmt.Println(&bodyLogin.Password)
+		if users[0].PasswordAgent != &bodyLogin.Password {
+			return nil, fmt.Errorf("Senha inválida")
+		}
+	*/
 	return users, nil
 }
 
-func (r *AgentRepository) GetisValidLoginMt5(email string) ([]models.QueryGetUsersAgent, error) {
-	rows, err := r.db.Query("SELECT id, first_name, second_name, email, dt_create_account, dt_expired_account, account_valid, quantity_alerts, quantity_account_copy FROM users_agent WHERE email = ?", email)
+//
+
+func (r *AgentRepository) GetDataAgent(email string) ([]models.QueryGetUsersAgent, error) {
+	rows, err := r.db.Query("SELECT id, first_name, second_name, email, dt_create_account, dt_expired_account, account_valid, quantity_alerts, quantity_account_copy , password_agent FROM users_agent WHERE email = ?", email)
 	if err != nil {
 		fmt.Println("\n\n ERRO : ", err.Error())
 		return nil, err
@@ -206,6 +245,48 @@ func (r *AgentRepository) GetisValidLoginMt5(email string) ([]models.QueryGetUse
 			&user.AccountValid,
 			&user.QuantityAlert,
 			&user.AccountCopy,
+			&user.PasswordAgent,
+		)
+		if err != nil {
+			fmt.Println("\n\n ERRO : ", err.Error())
+			return nil, err
+		}
+		users = append(users, user)
+	}
+
+	if err := rows.Err(); err != nil {
+		fmt.Println("\n\n ERRO : ", err.Error())
+		return nil, err
+	}
+
+	if len(users) == 0 {
+		return nil, fmt.Errorf("Usuário não encontrado")
+	}
+	return users, nil
+}
+
+func (r *AgentRepository) GetisValidLoginMt5(email string) ([]models.QueryGetUsersAgent, error) {
+	rows, err := r.db.Query("SELECT id, first_name, second_name, email, dt_create_account, dt_expired_account, account_valid, quantity_alerts, quantity_account_copy , password_agent FROM users_agent WHERE email = ?", email)
+	if err != nil {
+		fmt.Println("\n\n ERRO : ", err.Error())
+		return nil, err
+	}
+	defer rows.Close()
+
+	var users []models.QueryGetUsersAgent
+	for rows.Next() {
+		var user models.QueryGetUsersAgent
+		err := rows.Scan(
+			&user.ID,
+			&user.FirstName,
+			&user.SecondName,
+			&user.Email,
+			&user.CreateAccount,
+			&user.ExpiredAccount,
+			&user.AccountValid,
+			&user.QuantityAlert,
+			&user.AccountCopy,
+			&user.PasswordAgent,
 		)
 		if err != nil {
 			fmt.Println("\n\n ERRO : ", err.Error())
@@ -250,10 +331,10 @@ func (r *AgentRepository) InsertClient(bodyClientReq models.QueryBodyUsersAgent)
 	var accountValidBody = bodyClientReq.AccountValid
 	var quantityAlertBody = bodyClientReq.QuantityAlert
 	var quantityAccountCopyBody = bodyClientReq.AccountCopy
-	request, err := r.db.Exec("INSERT INTO users_agent (first_name, 	second_name, 		email, 		,password_agent,	dt_create_account, 	dt_expired_account, 	account_valid, 		quantity_alerts, 	quantity_account_copy) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+	request, err := r.db.Exec("INSERT INTO users_agent (first_name, 	second_name, 		email, 		password_agent,	dt_create_account, 	dt_expired_account, 	account_valid, 		quantity_alerts, 	quantity_account_copy) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
 		firtNameBody, secondNameBody, emailBody, passwordBody, dtCreateBody, dtExpiredBody, accountValidBody, quantityAlertBody, quantityAccountCopyBody)
 	if err != nil {
-		return 0, fmt.Errorf("Erro ao inserir uma copy no banco de dados  ", err.Error())
+		return 0, fmt.Errorf("Erro ao inserir um agente no banco de dados  ", err.Error())
 	}
 
 	insertID, err := request.LastInsertId()

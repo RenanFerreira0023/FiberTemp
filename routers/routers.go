@@ -3,7 +3,6 @@ package routers
 import (
 	"fmt"
 	"net/http"
-	"os"
 
 	"github.com/RenanFerreira0023/FiberTemp/config"
 	controllerAgent "github.com/RenanFerreira0023/FiberTemp/controllers/agent"
@@ -240,6 +239,50 @@ func NewRouter() http.Handler {
 	/////~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 	/////~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
+	mux.HandleFunc("/Agent/Login/Password/ChargePass", func(w http.ResponseWriter, r *http.Request) {
+
+		switch r.Method {
+		case "OPTIONS":
+			handleOptionsRequest(w, r)
+			return
+		case "POST":
+			middlewareController.CheckAntiDDoS(
+				agentController.CheckURLDatas(
+					agentController.SetNewPasswordAgent(
+						//		middlewareController.CreateAuthMiddleware(
+						http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+						})))).ServeHTTP(w, r)
+		default:
+			middlewareController.CheckAntiDDoS(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				http.Error(w, middlewareController.ConvertStructError(http.StatusText(http.StatusMethodNotAllowed)), http.StatusBadRequest)
+			})).ServeHTTP(w, r)
+
+		}
+	})
+
+	mux.HandleFunc("/Agent/Datas/", func(w http.ResponseWriter, r *http.Request) {
+
+		switch r.Method {
+		case "OPTIONS":
+			handleOptionsRequest(w, r)
+			return
+		case "GET":
+			middlewareController.CheckAntiDDoS(
+				agentController.CheckURLDatas(
+					agentController.GetDataAgent(
+						//		middlewareController.CreateAuthMiddleware(
+						http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+						})))).ServeHTTP(w, r)
+		default:
+			middlewareController.CheckAntiDDoS(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				http.Error(w, middlewareController.ConvertStructError(http.StatusText(http.StatusMethodNotAllowed)), http.StatusBadRequest)
+			})).ServeHTTP(w, r)
+
+		}
+	})
+
 	mux.HandleFunc("/Agent/Auth/", func(w http.ResponseWriter, r *http.Request) {
 
 		switch r.Method {
@@ -469,6 +512,26 @@ func NewRouter() http.Handler {
 		}
 	})
 
+	mux.HandleFunc("/Agent/Login/Password/SendEmail/", func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case "OPTIONS":
+			handleOptionsRequest(w, r)
+			return
+		case "GET":
+			middlewareController.CheckAntiDDoS(
+				middlewareController.CheckValidToken(
+					agentController.SendEmailResetPassword(
+						http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+						})))).ServeHTTP(w, r)
+		default:
+			middlewareController.CheckAntiDDoS(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				http.Error(w, middlewareController.ConvertStructError(http.StatusText(http.StatusMethodNotAllowed)), http.StatusBadRequest)
+			})).ServeHTTP(w, r)
+
+		}
+	})
+
 	mux.HandleFunc("/Agent/Login/mt5/", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case "OPTIONS":
@@ -546,8 +609,16 @@ func handleOptionsRequest(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		fmt.Println("Erro ao carregar o arquivo .env")
 	}
-	frontHostURL := os.Getenv("FRONT_HOST_URL")
-	w.Header().Set("Access-Control-Allow-Origin", frontHostURL)
+
+	// Definindo os cabeçalhos CORS para permitir solicitações de origens específicas
+	// Certifique-se de permitir a origem correta, substituindo "http://localhost:8080" pelo seu valor
+	w.Header().Set("Access-Control-Allow-Origin", "http://localhost")
 	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 	w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, Authorization")
+
+	// Respondendo ao método OPTIONS sem corpo e status OK
+	//	if r.Method == "OPTIONS" {
+	//		w.WriteHeader(http.StatusOK)
+	//		return
+	//	}
 }

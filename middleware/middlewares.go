@@ -40,7 +40,6 @@ func CreateTokenHandler(ID int, next http.Handler) http.Handler {
 		var queryRequestToken models.QueryRequestToken
 		queryRequestToken.UserID = ID
 		queryRequestToken.Token = tokenString
-
 		jsonResponse, err := json.Marshal(queryRequestToken)
 		if err != nil {
 			http.Error(w, ("Trasnformação de json invalido"), http.StatusInternalServerError)

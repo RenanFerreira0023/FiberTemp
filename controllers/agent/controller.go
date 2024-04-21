@@ -8,6 +8,7 @@ import (
 	"time"
 
 	middlewareController "github.com/RenanFerreira0023/FiberTemp/controllers/middleware"
+	"gopkg.in/gomail.v2"
 
 	"github.com/RenanFerreira0023/FiberTemp/models"
 
@@ -540,6 +541,61 @@ func (a *AgentController) CheckURLDatas(next http.Handler) http.Handler {
 	})
 }
 
+func (a *AgentController) SendEmailResetPassword(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+		emailAgent := r.URL.Query().Get("emailAgent")
+		if emailAgent == "" {
+			http.Error(w, middleware.ConvertStructError("Email não recebido"), http.StatusForbidden)
+			return
+		}
+
+		req, err := a.repository.RemovePasswordAgent(emailAgent)
+		if err != nil {
+			http.Error(w, middleware.ConvertStructError(err.Error()), http.StatusNotFound)
+			return
+		}
+		fmt.Println("ID		" + strconv.Itoa(req.ID))
+		fmt.Println("FirstName		" + (req.FirstName))
+		fmt.Println("Email		" + (req.Email))
+
+		///////////////////////////////////////////
+		///////////////////////////////////////////
+
+		const (
+			host     = "smtp.gmail.com"
+			port     = 587
+			username = "appsskilldeveloper@gmail.com"
+			password = "syjufjhtbwmntewc"
+		)
+
+		dialer := gomail.NewDialer(host, port, username, password)
+
+		msg := gomail.NewMessage()
+		msg.SetHeader("From", username)
+		msg.SetHeader("To", emailAgent)
+		msg.SetHeader("Subject", "Meta Copy 5 - Redefir sua senha")
+		//msg.SetBody("text/html", "Essa é uma mensagem automática do sistema MetaCopy5 \nPara redefinir sua senha clique aqui.\n\n\nEquipe MetaCopy5 agradece!.")
+		msg.SetBody("text/html", "Essa é uma mensagem automática do sistema MetaCopy5 <br/>"+
+			"Para redefinir sua senha <a href='http://localhost/Ryder/requestPass.php/?emailAgent="+emailAgent+"'>clique aqui</a>.<br/><br/>"+
+			"Equipe MetaCopy5 agradece!.")
+		if err := dialer.DialAndSend(msg); err != nil {
+			panic(msg)
+		}
+		fmt.Println("Message enviada com sucesso !")
+
+		var strReq200 models.JsonRequest200
+		strReq200.DataBaseID = 0
+		strReq200.MsgInsert = "Dentro de 5 minutos você irá receber um e-mail ( Confira sua caixa de spam !!! )"
+		jsonResponse, err := json.Marshal(strReq200)
+		if err != nil {
+			http.Error(w, middleware.ConvertStructError("Trasnformação de json invalido"), http.StatusInternalServerError)
+		}
+		w.Write([]byte(jsonResponse))
+
+	})
+}
+
 func (a *AgentController) GetLoginAgentAdm(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
@@ -621,6 +677,57 @@ func (a *AgentController) GetLoginAgentMt5(next http.Handler) http.Handler {
 		}
 
 		jsonResponse, err := json.Marshal(req)
+		if err != nil {
+			http.Error(w, middleware.ConvertStructError("Trasnformação de json invalido"), http.StatusInternalServerError)
+		}
+
+		w.Write([]byte(jsonResponse))
+		next.ServeHTTP(w, r)
+	})
+}
+
+func (a *AgentController) SetNewPasswordAgent(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+		var copyBody models.BodyPasswordAgent
+		if err := json.NewDecoder(r.Body).Decode(&copyBody); err != nil {
+			http.Error(w, middleware.ConvertStructError(err.Error()), http.StatusBadRequest)
+			return
+		}
+
+		if !middlewareController.IsValidInput("password", (copyBody.PasswordAgent)) {
+			http.Error(w, middlewareController.ConvertStructError(fmt.Sprintf("Valor inválido para o parâmetro '%s': %s", "senha", fmt.Sprint(copyBody.PasswordAgent))), http.StatusBadRequest)
+			return
+		}
+
+		req, err := a.repository.SetNewPasswordAgent(copyBody)
+		if err != nil {
+			http.Error(w, middleware.ConvertStructError(err.Error()), http.StatusNotFound)
+			return
+		}
+
+		jsonResponse, err := json.Marshal(req)
+		if err != nil {
+			http.Error(w, middleware.ConvertStructError("Trasnformação de json invalido"), http.StatusInternalServerError)
+		}
+
+		w.Write([]byte(jsonResponse))
+		next.ServeHTTP(w, r)
+
+	})
+}
+
+func (a *AgentController) GetDataAgent(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		emailValue := r.URL.Query().Get("emailAgent")
+
+		agent, err := a.repository.GetDataAgent(emailValue)
+		if err != nil {
+			http.Error(w, middleware.ConvertStructError(err.Error()), http.StatusNotFound)
+			return
+		}
+
+		jsonResponse, err := json.Marshal(agent)
 		if err != nil {
 			http.Error(w, middleware.ConvertStructError("Trasnformação de json invalido"), http.StatusInternalServerError)
 		}

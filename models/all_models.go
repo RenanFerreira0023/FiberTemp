@@ -17,7 +17,7 @@ type QueryGetUsersAgent struct {
 	FirstName      string    `json:"first_name"`
 	SecondName     string    `json:"second_name"`
 	Email          string    `json:"email"`
-	PasswordAgent  string    `json:"password_agent"`
+	PasswordAgent  *string   `json:"password_agent"`
 	CreateAccount  time.Time `json:"dt_create_account"`
 	ExpiredAccount time.Time `json:"dt_expired_account"`
 	AccountValid   bool      `json:"account_valid"`
@@ -71,6 +71,7 @@ type QueryBodyUserReceptor struct {
 	Email          string    `json:"email"`
 	CreateAccount  time.Time `json:"dt_create_account"`
 	ExpiredAccount time.Time `json:"dt_expired_account"`
+	Password_Agent string    `json:"password_agent"`
 }
 
 type QueryGetUserReceptor struct {
@@ -208,4 +209,15 @@ type RequestInformationChannel struct {
 	NameChannel       string `json:"name_channel"`
 	DateCreateChannel string `json:"dt_create_channel"`
 	CountCopy         int    `json:"count_copy"`
+}
+
+type RequestPasswordExist struct {
+	ID        int    `json:"id"`
+	FirstName string `json:"first_name"`
+	Email     string `json:"email"`
+}
+
+type BodyPasswordAgent struct {
+	ID            int    `json:"id"`
+	PasswordAgent string `json:"password_agent"`
 }
