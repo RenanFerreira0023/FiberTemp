@@ -344,9 +344,9 @@ func (r *AgentRepository) InsertClient(bodyClientReq models.QueryBodyUsersAgent)
 	return int(insertID), nil
 }
 
-func (r *AgentRepository) GetPermissionListOutReceptor(channelID string) ([]models.RequestPermissionRequest, error) {
+func (r *AgentRepository) GetPermissionListOutReceptor(channelID string, agentID string) ([]models.RequestPermissionRequest, error) {
 	//	rows, err := r.db.Query("SELECT id, first_name, second_name, email FROM users_receptor WHERE id IN (SELECT id FROM permission WHERE channel_id = ?);", channelID)
-	rows, err := r.db.Query("SELECT ur.id, ur.first_name, ur.second_name, ur.email FROM users_receptor AS ur LEFT JOIN Permission AS p ON ur.ID = p.user_receptor_id WHERE p.user_receptor_id IS NULL OR (p.channel_id IS NOT NULL AND p.channel_id != ?); ", channelID)
+	rows, err := r.db.Query("SELECT  ur.id, ur.first_name, ur.second_name, ur.email FROM users_receptor AS ur WHERE ur.id NOT IN (SELECT user_receptor_id FROM Permission WHERE channel_id = ? )  AND agent_id = ?;", channelID, agentID)
 
 	if err != nil {
 		fmt.Println("\n\n ERRO : ", err.Error())
@@ -418,7 +418,7 @@ func (r *AgentRepository) GetPermissionListReceptor(channelID string) ([]models.
 func (r *AgentRepository) GetChannelList(structURL models.StrutcURLGetChannelList) ([]models.RequestChannelList, error) {
 
 	rows, err := r.db.Query("SELECT id , users_agent_id , channel_name , dt_create_channel    FROM channels WHERE users_agent_id = ? AND dt_create_channel BETWEEN ? AND ?  LIMIT ?,?;",
-		structURL.AgentID, structURL.DateEnd, structURL.DateStart, structURL.Offset, structURL.PageLimit)
+		structURL.AgentID, structURL.DateStart, structURL.DateEnd, structURL.Offset, structURL.PageLimit)
 
 	defer rows.Close()
 
@@ -426,10 +426,12 @@ func (r *AgentRepository) GetChannelList(structURL models.StrutcURLGetChannelLis
 		fmt.Println("\n\n ERRO : ", err.Error())
 		return nil, err
 	}
-	if !rows.Next() {
-		fmt.Println("null")
-		return nil, nil
-	}
+	/*
+		if !rows.Next() {
+			fmt.Println("null")
+			return nil, nil
+		}
+	*/
 	var bodyChannelsList []models.RequestChannelList
 
 	for rows.Next() {
@@ -460,22 +462,14 @@ func (r *AgentRepository) GetPermissionChannelList(structURL models.StrutcURLGet
 	//	msgQuery := "SELECT id , users_agent_id , channel_name , dt_create_channel    FROM channels WHERE users_agent_id = ? AND dt_create_channel BETWEEN ? AND ?  LIMIT ?,?;"
 	rows, err := r.db.Query(msgQuery,
 		structURL.AgentID, structURL.DateEnd, structURL.DateStart, structURL.Offset, structURL.PageLimit)
-	fmt.Println(msgQuery)
-	fmt.Println("structURL.AgentID   " + strconv.Itoa(structURL.AgentID))
-	fmt.Println("structURL.DateEnd   " + structURL.DateEnd)
-	fmt.Println("structURL.DateStart   " + structURL.DateStart)
-	fmt.Println("structURL.Offset   " + strconv.Itoa(structURL.Offset))
-	fmt.Println("structURL.PageLimit   " + strconv.Itoa(structURL.PageLimit))
+
 	defer rows.Close()
 
 	if err != nil {
 		fmt.Println("\n\n ERRO : ", err.Error())
 		return nil, err
 	}
-	if !rows.Next() {
-		fmt.Println("null")
-		return nil, nil
-	}
+
 	var bodyChannelsList []models.RequestChannelList
 
 	for rows.Next() {

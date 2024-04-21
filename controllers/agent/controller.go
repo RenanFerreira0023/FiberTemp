@@ -303,11 +303,6 @@ func (c *AgentController) GetListPermissionChannel(next http.Handler) http.Handl
 		structURL.DateEnd = endDateStr
 		structURL.Offset = offsetStr
 		structURL.PageLimit = limitPageStr
-		fmt.Println("structURL.AgentID   ", structURL.AgentID)
-		fmt.Println("structURL.startDateStr   ", startDateStr)
-		fmt.Println("structURL.endDateStr   ", endDateStr)
-		fmt.Println("structURL.offsetStr   ", offsetStr)
-		fmt.Println("structURL.limitPageStr   ", limitPageStr)
 
 		//////////////////////
 		//// GET a lista de canal
@@ -337,11 +332,11 @@ func (c *AgentController) GetListPermissionChannel(next http.Handler) http.Handl
 func (c *AgentController) GetReceptorsOutListPermission(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		channel_id := r.URL.Query().Get("channel_id")
+		agent_id := r.URL.Query().Get("agent_id")
 		//////////////////////
 		//// GET a lista de receptor permitidos
 		//////////////////////
-		fmt.Print("channel_id      " + channel_id)
-		requestChannelListOut, err := c.repository.GetPermissionListOutReceptor(channel_id)
+		requestChannelListOut, err := c.repository.GetPermissionListOutReceptor(channel_id, agent_id)
 		if err != nil {
 			http.Error(w, middleware.ConvertStructError(err.Error()), http.StatusInternalServerError)
 			return
@@ -352,7 +347,7 @@ func (c *AgentController) GetReceptorsOutListPermission(next http.Handler) http.
 			if err != nil {
 				http.Error(w, middleware.ConvertStructError("Trasnformação de json invalido"), http.StatusInternalServerError)
 			}
-			fmt.Print(jsonResponse)
+
 			w.Write([]byte(jsonResponse))
 		} else {
 			http.Error(w, middleware.ConvertStructError("Sem dados para retornar"), http.StatusNotFound)
@@ -422,11 +417,6 @@ func (c *AgentController) GetListChannel(next http.Handler) http.Handler {
 		structURL.DateEnd = endDateStr
 		structURL.Offset = offsetStr
 		structURL.PageLimit = limitPageStr
-		fmt.Println("structURL.AgentID   ", structURL.AgentID)
-		fmt.Println("structURL.startDateStr   ", startDateStr)
-		fmt.Println("structURL.endDateStr   ", endDateStr)
-		fmt.Println("structURL.offsetStr   ", offsetStr)
-		fmt.Println("structURL.limitPageStr   ", limitPageStr)
 
 		//////////////////////
 		//// GET a lista de canal
@@ -550,14 +540,11 @@ func (a *AgentController) SendEmailResetPassword(next http.Handler) http.Handler
 			return
 		}
 
-		req, err := a.repository.RemovePasswordAgent(emailAgent)
+		_, err := a.repository.RemovePasswordAgent(emailAgent)
 		if err != nil {
 			http.Error(w, middleware.ConvertStructError(err.Error()), http.StatusNotFound)
 			return
 		}
-		fmt.Println("ID		" + strconv.Itoa(req.ID))
-		fmt.Println("FirstName		" + (req.FirstName))
-		fmt.Println("Email		" + (req.Email))
 
 		///////////////////////////////////////////
 		///////////////////////////////////////////
@@ -582,7 +569,6 @@ func (a *AgentController) SendEmailResetPassword(next http.Handler) http.Handler
 		if err := dialer.DialAndSend(msg); err != nil {
 			panic(msg)
 		}
-		fmt.Println("Message enviada com sucesso !")
 
 		var strReq200 models.JsonRequest200
 		strReq200.DataBaseID = 0
