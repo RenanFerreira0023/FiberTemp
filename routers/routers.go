@@ -83,7 +83,7 @@ func NewRouter() http.Handler {
 		}
 	})
 
-	mux.HandleFunc("/Receptor/Login/", func(w http.ResponseWriter, r *http.Request) {
+	mux.HandleFunc("/Receptor/Login/mt5/", func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case "OPTIONS":
 			handleOptionsRequest(w, r)
@@ -249,6 +249,48 @@ func NewRouter() http.Handler {
 			middlewareController.CheckAntiDDoS(
 				agentController.CheckURLDatas(
 					agentController.SetNewPasswordAgent(
+						//		middlewareController.CreateAuthMiddleware(
+						http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+						})))).ServeHTTP(w, r)
+		default:
+			middlewareController.CheckAntiDDoS(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				http.Error(w, middlewareController.ConvertStructError(http.StatusText(http.StatusMethodNotAllowed)), http.StatusBadRequest)
+			})).ServeHTTP(w, r)
+
+		}
+	})
+
+	mux.HandleFunc("/Receptor/Channel/Credential/SendEmail", func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case "OPTIONS":
+			handleOptionsRequest(w, r)
+			return
+		case "POST":
+			middlewareController.CheckAntiDDoS(
+				agentController.CheckURLDatas(
+					agentController.SendEmailCrecentialsReceptor(
+						//		middlewareController.CreateAuthMiddleware(
+						http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+						})))).ServeHTTP(w, r)
+		default:
+			middlewareController.CheckAntiDDoS(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				http.Error(w, middlewareController.ConvertStructError(http.StatusText(http.StatusMethodNotAllowed)), http.StatusBadRequest)
+			})).ServeHTTP(w, r)
+
+		}
+	})
+
+	mux.HandleFunc("/Receptor/Channel/List/EmailList/", func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case "OPTIONS":
+			handleOptionsRequest(w, r)
+			return
+		case "GET":
+			middlewareController.CheckAntiDDoS(
+				agentController.CheckURLDatas(
+					agentController.GetEmailsReceptor(
 						//		middlewareController.CreateAuthMiddleware(
 						http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 

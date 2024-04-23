@@ -194,15 +194,46 @@ select * from users_receptor;
 select * from users_agent;
 
 
-#SELECT  ur.id, ur.first_name, ur.second_name, ur.email 
-SELECT  *
+SELECT  ur.id, ur.first_name, ur.second_name, ur.email 
 FROM users_receptor AS ur
 WHERE ur.id NOT IN (SELECT user_receptor_id FROM Permission WHERE channel_id = 16 ) 
-AND agent_id = (SELECT ua.id FROM users_agent AS ua WHERE (ua.id = ur.agent_id));
+AND agent_id = 2;
+
+
+SELECT  ur.id, ur.first_name, ur.second_name, ur.email FROM users_receptor AS ur WHERE ur.id NOT IN (SELECT user_receptor_id FROM Permission WHERE channel_id = ? )  AND agent_id = ?;
 
 
 
-AND agent_id = (SELECT ua.id FROM users_agent AS ua WHERE (ua.id = ur.agent_id));
+
+# email dele	   maria@gmail.com
+# id do receptor   2
+# id do agente     1 
+
+# nome do canal    canal_do_joarez_2024
+
+select * from users_agent;
+select * from Users_receptor;
+select * from channels;
+select * from Permission;
+
+
+
+SELECT PER.user_receptor_id, PER.channel_id, CH.channel_name 
+FROM Permission AS PER JOIN channels AS CH ON PER.channel_id = CH.id 
+WHERE PER.user_receptor_id = 2 ;
+
+
+SELECT id,  dt_expired_account , agent_id FROM users_receptor WHERE email = 'maria@gmail.com';
+
+
+SELECT UR.email AS login , CH.channel_name  AS channel_name
+FROM Permission AS PER 
+JOIN channels AS CH ON PER.channel_id = CH.id
+JOIN users_receptor AS UR ON UR.agent_id = UA.id
+WHERE PER.user_receptor_id = (SELECT id FROM users_receptor WHERE email ='allan@gmail.com' ) AND UR.email = 'allan@gmail.com';
+
+
+
 
 
 

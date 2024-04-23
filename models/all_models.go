@@ -87,6 +87,7 @@ type QueryGetUserReceptor struct {
 type QueryGetValidReceptor struct {
 	ID             int       `json:"id"`
 	ExpiredAccount time.Time `json:"dt_create_account"`
+	AgentID        int       `json:"agent_id"`
 }
 
 type QueryGetChannel struct {
@@ -220,4 +221,14 @@ type RequestPasswordExist struct {
 type BodyPasswordAgent struct {
 	ID            int    `json:"id"`
 	PasswordAgent string `json:"password_agent"`
+}
+
+type RequestEmailsReceptor struct {
+	Login       string `json:"login"`
+	ChannelName string `json:"channel_name"`
+}
+
+type BodyCredencialReceptor struct {
+	Email        string `json:"email_send"`
+	MsgSendEmail string `json:"msg_send_mail"`
 }

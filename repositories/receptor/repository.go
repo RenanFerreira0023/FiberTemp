@@ -99,9 +99,9 @@ func (r *ReceptorRepository) GetPermissionChannel(idChannel int, idReceptor int)
 	return nil
 }
 
-func (r *ReceptorRepository) GetAgentID(emailAgent string) (int, error) {
+func (r *ReceptorRepository) GetAgentID(agentID int) (int, error) {
 	var idUser int
-	err := r.db.QueryRow("SELECT id FROM users_agent WHERE email = ? ", emailAgent).Scan(&idUser)
+	err := r.db.QueryRow("SELECT id FROM users_agent WHERE id = ? ", agentID).Scan(&idUser)
 	if err != nil {
 		return 0, fmt.Errorf(err.Error())
 	}
@@ -119,7 +119,7 @@ func (r *ReceptorRepository) GetChannel(channelName string, idAgent int) (models
 }
 
 func (r *ReceptorRepository) GetValidReceptor(email string) ([]models.QueryGetValidReceptor, error) {
-	rows, err := r.db.Query("SELECT id,  dt_expired_account FROM users_receptor WHERE email = ?", email)
+	rows, err := r.db.Query("SELECT id,  dt_expired_account , agent_id FROM users_receptor WHERE email = ?", email)
 	if err != nil {
 		fmt.Println("\n\n ERRO : ", err.Error())
 		return nil, err
@@ -131,6 +131,7 @@ func (r *ReceptorRepository) GetValidReceptor(email string) ([]models.QueryGetVa
 		err := rows.Scan(
 			&user.ID,
 			&user.ExpiredAccount,
+			&user.AgentID,
 		)
 		if err != nil {
 			fmt.Println("\n\n ERRO : ", err.Error())

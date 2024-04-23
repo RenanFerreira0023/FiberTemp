@@ -703,6 +703,73 @@ func (a *AgentController) SetNewPasswordAgent(next http.Handler) http.Handler {
 	})
 }
 
+func (a *AgentController) SendEmailCrecentialsReceptor(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+		var copyBody models.BodyCredencialReceptor
+		if err := json.NewDecoder(r.Body).Decode(&copyBody); err != nil {
+			http.Error(w, middleware.ConvertStructError(err.Error()), http.StatusBadRequest)
+			return
+		}
+
+		var emailTo = copyBody.Email
+		const (
+			host     = "smtp.gmail.com"
+			port     = 587
+			username = "appsskilldeveloper@gmail.com"
+			password = "syjufjhtbwmntewc"
+		)
+
+		dialer := gomail.NewDialer(host, port, username, password)
+
+		msg := gomail.NewMessage()
+		msg.SetHeader("From", username)
+		msg.SetHeader("To", emailTo)
+		msg.SetHeader("Subject", "Meta Copy 5 - Minhas Credenciais")
+
+		msg.SetBody("text/html", "Essa")
+		msgBody := "Essa é uma mensagem automática do sistema MetaCopy5 <br/>" +
+			"Segue abaixo as credenciais para copys:<br/>"
+		msgBody += copyBody.MsgSendEmail + "<br/>"
+		msgBody += "Para baixar o arquivo .ex5 <a href='https://drive.google.com/drive/folders/1DKYJkhMYStHrb1E1beJOiwZUgoiFK96z?usp=drive_link'>clique aqui</a> <br/>" +
+			"Equipe MetaCopy5 agradece!"
+		msg.SetBody("text/html", msgBody)
+
+		if err := dialer.DialAndSend(msg); err != nil {
+			panic(msg)
+		}
+		var strReq200 models.JsonRequest200
+		strReq200.DataBaseID = 0
+		strReq200.MsgInsert = "Dentro de 5 minutos você irá receber um e-mail ( Confira sua caixa de spam !!! )"
+		jsonResponse, err := json.Marshal(strReq200)
+		if err != nil {
+			http.Error(w, middleware.ConvertStructError("Trasnformação de json invalido"), http.StatusInternalServerError)
+		}
+		w.Write([]byte(jsonResponse))
+
+	})
+}
+
+func (a *AgentController) GetEmailsReceptor(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		emailValue := r.URL.Query().Get("emailReceptor")
+
+		agent, err := a.repository.GetCredentialsReceptorChannels(emailValue)
+		if err != nil {
+			http.Error(w, middleware.ConvertStructError(err.Error()), http.StatusNotFound)
+			return
+		}
+
+		jsonResponse, err := json.Marshal(agent)
+		if err != nil {
+			http.Error(w, middleware.ConvertStructError("Trasnformação de json invalido"), http.StatusInternalServerError)
+		}
+
+		w.Write([]byte(jsonResponse))
+		next.ServeHTTP(w, r)
+	})
+}
+
 func (a *AgentController) GetDataAgent(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		emailValue := r.URL.Query().Get("emailAgent")

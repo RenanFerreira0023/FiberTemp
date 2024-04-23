@@ -224,6 +224,48 @@ func (r *AgentRepository) GetisValidLoginAdm(bodyLogin models.BodyPostLoginAdm) 
 
 //
 
+func (r *AgentRepository) GetCredentialsReceptorChannels(email string) ([]models.RequestEmailsReceptor, error) {
+
+	msgQuery := ""
+	msgQuery += "SELECT UR.email AS login , CH.channel_name  AS channel_name "
+	msgQuery += "FROM Permission AS PER "
+	msgQuery += "JOIN channels AS CH ON PER.channel_id = CH.id "
+	msgQuery += "JOIN users_agent AS UA ON CH.users_agent_id = UA.id "
+	msgQuery += "JOIN users_receptor AS UR ON UR.agent_id = UA.id "
+	msgQuery += "WHERE PER.user_receptor_id = (SELECT id FROM users_receptor WHERE email =? ) AND UR.email = ?;	"
+
+	rows, err := r.db.Query(msgQuery, email, email)
+	if err != nil {
+		fmt.Println("\n\n ERRO : ", err.Error())
+		return nil, err
+	}
+	defer rows.Close()
+
+	var users []models.RequestEmailsReceptor
+	for rows.Next() {
+		var user models.RequestEmailsReceptor
+		err := rows.Scan(
+			&user.Login,
+			&user.ChannelName,
+		)
+		if err != nil {
+			fmt.Println("\n\n ERRO : ", err.Error())
+			return nil, err
+		}
+		users = append(users, user)
+	}
+
+	if err := rows.Err(); err != nil {
+		fmt.Println("\n\n ERRO : ", err.Error())
+		return nil, err
+	}
+
+	if len(users) == 0 {
+		return nil, fmt.Errorf("Usuário não encontrado")
+	}
+	return users, nil
+}
+
 func (r *AgentRepository) GetDataAgent(email string) ([]models.QueryGetUsersAgent, error) {
 	rows, err := r.db.Query("SELECT id, first_name, second_name, email, dt_create_account, dt_expired_account, account_valid, quantity_alerts, quantity_account_copy , password_agent FROM users_agent WHERE email = ?", email)
 	if err != nil {

@@ -191,12 +191,98 @@ func (c *ReceptorController) GetLoginReceptor(next http.Handler) http.Handler {
 			return
 		}
 		//
-		emailAgentValue := r.URL.Query().Get("emailAgent")
-		if emailAgentValue == "" {
-			http.Error(w, middleware.ConvertStructError("Email do agente não recebido"), http.StatusForbidden)
+
+		/*
+			if emailAgentValue == "" {
+				http.Error(w, middleware.ConvertStructError("Email do agente não recebido"), http.StatusForbidden)
+				return
+			}
+		*/
+		channelValue := r.URL.Query().Get("channel")
+		if channelValue == "" {
+			http.Error(w, middleware.ConvertStructError("Canal não recebido"), http.StatusForbidden)
 			return
 		}
 
+		//////////////////////
+		//// Get valid receptor
+		//////////////////////
+		request, err := c.repository.GetValidReceptor(loginValue)
+		if err != nil {
+			http.Error(w, middleware.ConvertStructError(err.Error()), http.StatusNotFound)
+			return
+		}
+		var receptorID = request[0].ID
+		var dateExpired = request[0].ExpiredAccount
+		var idAgent = request[0].AgentID
+		if time.Now().After(dateExpired) {
+			http.Error(w, middleware.ConvertStructError("Conta Expirada, Envie um e-mail imediato com o agente provedor do sinal para regularizar sua situação"), http.StatusForbidden)
+			return
+		}
+		/*
+			//////////////////////
+			//// Get id agent
+			//////////////////////
+			keypassNumber, _ := strconv.Atoi(keypass)
+			idAgent, err := c.repository.GetAgentID(keypassNumber)
+			if err != nil {
+				http.Error(w, middleware.ConvertStructError("Agente não encontrado"), http.StatusNotFound)
+				return
+			}
+		*/
+		//////////////////////
+		//// Get channel
+		//////////////////////
+		requestChannel, err := c.repository.GetChannel(channelValue, idAgent)
+		if err != nil {
+			http.Error(w, middleware.ConvertStructError("Canal não encontrado"), http.StatusNotFound)
+			return
+		}
+		var channelID = requestChannel.ID
+		var agentID = requestChannel.AgentID
+
+		//////////////////////
+		//// Get Permission
+		//////////////////////
+		err = c.repository.GetPermissionChannel(channelID, receptorID)
+		if err != nil {
+			http.Error(w, middleware.ConvertStructError("Você não tem permissão para acessar esse canal"), http.StatusNotFound)
+			return
+		}
+		var modelLogin models.QueryRequestLoginReceptor
+		modelLogin.AgentID = agentID
+		modelLogin.ReceptorID = receptorID
+		modelLogin.ChannelID = channelID
+
+		jsonResponse, err := json.Marshal(modelLogin)
+		if err != nil {
+			http.Error(w, middleware.ConvertStructError("Trasnformação de json invalido"), http.StatusInternalServerError)
+		}
+		w.Write([]byte(jsonResponse))
+		next.ServeHTTP(w, r)
+	})
+}
+
+func (c *ReceptorController) GetLoginReceptor_BKP(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		loginValue := r.URL.Query().Get("login")
+		if loginValue == "" {
+			http.Error(w, middleware.ConvertStructError("Login não recebido"), http.StatusForbidden)
+			return
+		}
+		//
+
+		keypass := r.URL.Query().Get("agentID")
+		if !middlewareController.IsValidInput("number", (keypass)) {
+			http.Error(w, middlewareController.ConvertStructError(fmt.Sprintf("Valor inválido para o parâmetro '%s': %s", "number", fmt.Sprint(keypass))), http.StatusBadRequest)
+			return
+		}
+		/*
+			if emailAgentValue == "" {
+				http.Error(w, middleware.ConvertStructError("Email do agente não recebido"), http.StatusForbidden)
+				return
+			}
+		*/
 		channelValue := r.URL.Query().Get("channel")
 		if channelValue == "" {
 			http.Error(w, middleware.ConvertStructError("Canal não recebido"), http.StatusForbidden)
@@ -221,7 +307,8 @@ func (c *ReceptorController) GetLoginReceptor(next http.Handler) http.Handler {
 		//////////////////////
 		//// Get id agent
 		//////////////////////
-		idAgent, err := c.repository.GetAgentID(emailAgentValue)
+		keypassNumber, _ := strconv.Atoi(keypass)
+		idAgent, err := c.repository.GetAgentID(keypassNumber)
 		if err != nil {
 			http.Error(w, middleware.ConvertStructError("Agente não encontrado"), http.StatusNotFound)
 			return
