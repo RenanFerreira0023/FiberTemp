@@ -13,7 +13,11 @@ import (
 	"github.com/joho/godotenv"
 )
 
+// var NAME_HOSTING_ALLOW_ORIGIN = "http://localhost"
+var NAME_HOSTING_ALLOW_ORIGIN = "http://192.168.1.2"
+
 func NewRouter() http.Handler {
+
 	db := config.NewDB()
 
 	agentRepository := repositoryAgent.NewAgentRepository(db)
@@ -30,6 +34,10 @@ func NewRouter() http.Handler {
 			handleOptionsRequest(w, r)
 			return
 		case "GET":
+			w.Header().Set("Access-Control-Allow-Origin", NAME_HOSTING_ALLOW_ORIGIN)
+			w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+			w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, Authorization")
+			w.Header().Set("Content-Type", "application/json")
 			middlewareController.CheckAntiDDoS(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 			})).ServeHTTP(w, r)
@@ -47,6 +55,11 @@ func NewRouter() http.Handler {
 			handleOptionsRequest(w, r)
 			return
 		case "GET":
+			w.Header().Set("Access-Control-Allow-Origin", NAME_HOSTING_ALLOW_ORIGIN)
+			w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+			w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, Authorization")
+			w.Header().Set("Content-Type", "application/json")
+
 			middlewareController.CheckAntiDDoS(
 				receptorController.CheckURLDatas(
 					receptorController.CheckUserExist(
@@ -68,6 +81,11 @@ func NewRouter() http.Handler {
 			handleOptionsRequest(w, r)
 			return
 		case "POST":
+			w.Header().Set("Access-Control-Allow-Origin", NAME_HOSTING_ALLOW_ORIGIN)
+			w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+			w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, Authorization")
+			w.Header().Set("Content-Type", "application/json")
+
 			middlewareController.CheckAntiDDoS(
 				middlewareController.CheckValidToken(
 					receptorController.InsertReceptor(
@@ -89,6 +107,11 @@ func NewRouter() http.Handler {
 			handleOptionsRequest(w, r)
 			return
 		case "GET":
+			w.Header().Set("Access-Control-Allow-Origin", NAME_HOSTING_ALLOW_ORIGIN)
+			w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+			w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, Authorization")
+			w.Header().Set("Content-Type", "application/json")
+
 			middlewareController.CheckAntiDDoS(
 				middlewareController.CheckValidToken(
 					receptorController.CheckURLDatas(
@@ -97,6 +120,7 @@ func NewRouter() http.Handler {
 
 							}))))).ServeHTTP(w, r)
 		default:
+
 			middlewareController.CheckAntiDDoS(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				http.Error(w, middlewareController.ConvertStructError(http.StatusText(http.StatusMethodNotAllowed)), http.StatusBadRequest)
 			})).ServeHTTP(w, r)
@@ -110,6 +134,10 @@ func NewRouter() http.Handler {
 			handleOptionsRequest(w, r)
 			return
 		case "GET":
+			w.Header().Set("Access-Control-Allow-Origin", NAME_HOSTING_ALLOW_ORIGIN)
+			w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+			w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, Authorization")
+			w.Header().Set("Content-Type", "application/json")
 			middlewareController.CheckAntiDDoS(
 				middlewareController.CheckValidToken(
 					receptorController.CheckURLDatas(
@@ -131,6 +159,10 @@ func NewRouter() http.Handler {
 			handleOptionsRequest(w, r)
 			return
 		case "DELETE":
+			w.Header().Set("Access-Control-Allow-Origin", NAME_HOSTING_ALLOW_ORIGIN)
+			w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+			w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, Authorization")
+			w.Header().Set("Content-Type", "application/json")
 			middlewareController.CheckAntiDDoS(
 				middlewareController.CheckValidToken(
 					receptorController.DeleteReceptor(
@@ -151,6 +183,10 @@ func NewRouter() http.Handler {
 			handleOptionsRequest(w, r)
 			return
 		case "PUT":
+			w.Header().Set("Access-Control-Allow-Origin", NAME_HOSTING_ALLOW_ORIGIN)
+			w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+			w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, Authorization")
+			w.Header().Set("Content-Type", "application/json")
 			middlewareController.CheckAntiDDoS(
 				middlewareController.CheckValidToken(
 					receptorController.EditReceptor(
@@ -171,6 +207,10 @@ func NewRouter() http.Handler {
 			handleOptionsRequest(w, r)
 			return
 		case "GET":
+			w.Header().Set("Access-Control-Allow-Origin", NAME_HOSTING_ALLOW_ORIGIN)
+			w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+			w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, Authorization")
+			w.Header().Set("Content-Type", "application/json")
 			middlewareController.CheckAntiDDoS(
 				middlewareController.CheckValidToken(
 					receptorController.CheckURLDatas(
@@ -193,6 +233,10 @@ func NewRouter() http.Handler {
 			handleOptionsRequest(w, r)
 			return
 		case "POST":
+			w.Header().Set("Access-Control-Allow-Origin", NAME_HOSTING_ALLOW_ORIGIN)
+			w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+			w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, Authorization")
+			w.Header().Set("Content-Type", "application/json")
 			middlewareController.CheckAntiDDoS(
 				middlewareController.CheckValidToken(
 					receptorController.SendReqCopy(
@@ -214,6 +258,10 @@ func NewRouter() http.Handler {
 			handleOptionsRequest(w, r)
 			return
 		case "DELETE":
+			w.Header().Set("Access-Control-Allow-Origin", NAME_HOSTING_ALLOW_ORIGIN)
+			w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+			w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, Authorization")
+			w.Header().Set("Content-Type", "application/json")
 			middlewareController.CheckAntiDDoS(
 				middlewareController.CheckValidToken(
 					receptorController.DeletePermissionChannelReceptor(
@@ -246,6 +294,10 @@ func NewRouter() http.Handler {
 			handleOptionsRequest(w, r)
 			return
 		case "POST":
+			w.Header().Set("Access-Control-Allow-Origin", NAME_HOSTING_ALLOW_ORIGIN)
+			w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+			w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, Authorization")
+			w.Header().Set("Content-Type", "application/json")
 			middlewareController.CheckAntiDDoS(
 				agentController.CheckURLDatas(
 					agentController.SetNewPasswordAgent(
@@ -267,6 +319,10 @@ func NewRouter() http.Handler {
 			handleOptionsRequest(w, r)
 			return
 		case "POST":
+			w.Header().Set("Access-Control-Allow-Origin", NAME_HOSTING_ALLOW_ORIGIN)
+			w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+			w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, Authorization")
+			w.Header().Set("Content-Type", "application/json")
 			middlewareController.CheckAntiDDoS(
 				agentController.CheckURLDatas(
 					agentController.SendEmailCrecentialsReceptor(
@@ -288,6 +344,10 @@ func NewRouter() http.Handler {
 			handleOptionsRequest(w, r)
 			return
 		case "GET":
+			w.Header().Set("Access-Control-Allow-Origin", NAME_HOSTING_ALLOW_ORIGIN)
+			w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+			w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, Authorization")
+			w.Header().Set("Content-Type", "application/json")
 			middlewareController.CheckAntiDDoS(
 				agentController.CheckURLDatas(
 					agentController.GetEmailsReceptor(
@@ -310,6 +370,10 @@ func NewRouter() http.Handler {
 			handleOptionsRequest(w, r)
 			return
 		case "GET":
+			w.Header().Set("Access-Control-Allow-Origin", NAME_HOSTING_ALLOW_ORIGIN)
+			w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+			w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, Authorization")
+			w.Header().Set("Content-Type", "application/json")
 			middlewareController.CheckAntiDDoS(
 				agentController.CheckURLDatas(
 					agentController.GetDataAgent(
@@ -332,6 +396,11 @@ func NewRouter() http.Handler {
 			handleOptionsRequest(w, r)
 			return
 		case "GET":
+
+			w.Header().Set("Access-Control-Allow-Origin", NAME_HOSTING_ALLOW_ORIGIN)
+			w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+			w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, Authorization")
+			w.Header().Set("Content-Type", "application/json")
 			middlewareController.CheckAntiDDoS(
 				agentController.CheckURLDatas(
 					agentController.CheckUserExist(
@@ -353,6 +422,10 @@ func NewRouter() http.Handler {
 			handleOptionsRequest(w, r)
 			return
 		case "POST":
+			w.Header().Set("Access-Control-Allow-Origin", NAME_HOSTING_ALLOW_ORIGIN)
+			w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+			w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, Authorization")
+			w.Header().Set("Content-Type", "application/json")
 			middlewareController.CheckAntiDDoS(
 				middlewareController.CheckValidToken(
 					agentController.CreateAgent(
@@ -374,6 +447,10 @@ func NewRouter() http.Handler {
 			handleOptionsRequest(w, r)
 			return
 		case "POST":
+			w.Header().Set("Access-Control-Allow-Origin", NAME_HOSTING_ALLOW_ORIGIN)
+			w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+			w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, Authorization")
+			w.Header().Set("Content-Type", "application/json")
 			middlewareController.CheckAntiDDoS(
 				middlewareController.CheckValidToken(
 					agentController.CreateChannel(
@@ -395,6 +472,10 @@ func NewRouter() http.Handler {
 			handleOptionsRequest(w, r)
 			return
 		case "GET":
+			w.Header().Set("Access-Control-Allow-Origin", NAME_HOSTING_ALLOW_ORIGIN)
+			w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+			w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, Authorization")
+			w.Header().Set("Content-Type", "application/json")
 			middlewareController.CheckAntiDDoS(
 				middlewareController.CheckValidToken(
 					agentController.CheckURLDatas(
@@ -416,6 +497,10 @@ func NewRouter() http.Handler {
 			handleOptionsRequest(w, r)
 			return
 		case "GET":
+			w.Header().Set("Access-Control-Allow-Origin", NAME_HOSTING_ALLOW_ORIGIN)
+			w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+			w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, Authorization")
+			w.Header().Set("Content-Type", "application/json")
 			middlewareController.CheckAntiDDoS(
 				middlewareController.CheckValidToken(
 					agentController.CheckURLDatas(
@@ -437,6 +522,10 @@ func NewRouter() http.Handler {
 			handleOptionsRequest(w, r)
 			return
 		case "GET":
+			w.Header().Set("Access-Control-Allow-Origin", NAME_HOSTING_ALLOW_ORIGIN)
+			w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+			w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, Authorization")
+			w.Header().Set("Content-Type", "application/json")
 			middlewareController.CheckAntiDDoS(
 				middlewareController.CheckValidToken(
 					agentController.CheckURLDatas(
@@ -458,6 +547,10 @@ func NewRouter() http.Handler {
 			handleOptionsRequest(w, r)
 			return
 		case "GET":
+			w.Header().Set("Access-Control-Allow-Origin", NAME_HOSTING_ALLOW_ORIGIN)
+			w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+			w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, Authorization")
+			w.Header().Set("Content-Type", "application/json")
 			middlewareController.CheckAntiDDoS(
 				middlewareController.CheckValidToken(
 					agentController.CheckURLDatas(
@@ -479,6 +572,10 @@ func NewRouter() http.Handler {
 			handleOptionsRequest(w, r)
 			return
 		case "GET":
+			w.Header().Set("Access-Control-Allow-Origin", NAME_HOSTING_ALLOW_ORIGIN)
+			w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+			w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, Authorization")
+			w.Header().Set("Content-Type", "application/json")
 			middlewareController.CheckAntiDDoS(
 				middlewareController.CheckValidToken(
 					agentController.GetInformationChannel(
@@ -499,6 +596,10 @@ func NewRouter() http.Handler {
 			handleOptionsRequest(w, r)
 			return
 		case "DELETE":
+			w.Header().Set("Access-Control-Allow-Origin", NAME_HOSTING_ALLOW_ORIGIN)
+			w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+			w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, Authorization")
+			w.Header().Set("Content-Type", "application/json")
 			middlewareController.CheckAntiDDoS(
 				middlewareController.CheckValidToken(
 					agentController.DeleteChannel(
@@ -519,6 +620,10 @@ func NewRouter() http.Handler {
 			handleOptionsRequest(w, r)
 			return
 		case "PUT":
+			w.Header().Set("Access-Control-Allow-Origin", NAME_HOSTING_ALLOW_ORIGIN)
+			w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+			w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, Authorization")
+			w.Header().Set("Content-Type", "application/json")
 			middlewareController.CheckAntiDDoS(
 				middlewareController.CheckValidToken(
 					agentController.UpdateChannel(
@@ -539,6 +644,10 @@ func NewRouter() http.Handler {
 			handleOptionsRequest(w, r)
 			return
 		case "POST":
+			w.Header().Set("Access-Control-Allow-Origin", NAME_HOSTING_ALLOW_ORIGIN)
+			w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+			w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, Authorization")
+			w.Header().Set("Content-Type", "application/json")
 			middlewareController.CheckAntiDDoS(
 				middlewareController.CheckValidToken(
 					//					agentController.CheckURLDatas(
@@ -560,6 +669,10 @@ func NewRouter() http.Handler {
 			handleOptionsRequest(w, r)
 			return
 		case "GET":
+			w.Header().Set("Access-Control-Allow-Origin", NAME_HOSTING_ALLOW_ORIGIN)
+			w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+			w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, Authorization")
+			w.Header().Set("Content-Type", "application/json")
 			middlewareController.CheckAntiDDoS(
 				middlewareController.CheckValidToken(
 					agentController.SendEmailResetPassword(
@@ -580,6 +693,10 @@ func NewRouter() http.Handler {
 			handleOptionsRequest(w, r)
 			return
 		case "GET":
+			w.Header().Set("Access-Control-Allow-Origin", NAME_HOSTING_ALLOW_ORIGIN)
+			w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+			w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, Authorization")
+			w.Header().Set("Content-Type", "application/json")
 			middlewareController.CheckAntiDDoS(
 				middlewareController.CheckValidToken(
 					agentController.CheckURLDatas(
@@ -601,6 +718,10 @@ func NewRouter() http.Handler {
 			handleOptionsRequest(w, r)
 			return
 		case "POST":
+			w.Header().Set("Access-Control-Allow-Origin", NAME_HOSTING_ALLOW_ORIGIN)
+			w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+			w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, Authorization")
+			w.Header().Set("Content-Type", "application/json")
 			middlewareController.CheckAntiDDoS(
 				middlewareController.CheckValidToken(
 					agentController.InsertCopy(
@@ -622,6 +743,10 @@ func NewRouter() http.Handler {
 			handleOptionsRequest(w, r)
 			return
 		case "POST":
+			w.Header().Set("Access-Control-Allow-Origin", NAME_HOSTING_ALLOW_ORIGIN)
+			w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+			w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, Authorization")
+			w.Header().Set("Content-Type", "application/json")
 			middlewareController.CheckAntiDDoS(
 				middlewareController.CheckValidToken(
 					agentController.InsertPermissionChannel(
@@ -652,12 +777,10 @@ func handleOptionsRequest(w http.ResponseWriter, r *http.Request) {
 		fmt.Println("Erro ao carregar o arquivo .env")
 	}
 
-	// Definindo os cabeçalhos CORS para permitir solicitações de origens específicas
-	// Certifique-se de permitir a origem correta, substituindo "http://localhost:8080" pelo seu valor
-	w.Header().Set("Access-Control-Allow-Origin", "http://localhost")
+	w.Header().Set("Access-Control-Allow-Origin", NAME_HOSTING_ALLOW_ORIGIN)
 	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 	w.Header().Set("Access-Control-Allow-Headers", "Accept, Content-Type, Content-Length, Accept-Encoding, Authorization")
-
+	w.Header().Set("Content-Type", "application/json")
 	// Respondendo ao método OPTIONS sem corpo e status OK
 	//	if r.Method == "OPTIONS" {
 	//		w.WriteHeader(http.StatusOK)
