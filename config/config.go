@@ -30,7 +30,6 @@ func NewDB() *sql.DB {
 	fmt.Println("    |   dbPort    ", dbPort)
 	fmt.Println("    |   dbUser    ", dbUser)
 
-	//	db, err := sql.Open("mysql", ""+dbUser+":"+dbPassword+"@tcp("+dbHost+":"+dbPort+")/"+dbName+"?parseTime=true")
 	db, err := sql.Open("mysql", ""+dbUser+":"+dbPassword+"@tcp("+dbHost+":"+dbPort+")/"+dbName+"?parseTime=true")
 	if err != nil {
 		panic(err)

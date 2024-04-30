@@ -13,8 +13,9 @@ import (
 	"github.com/joho/godotenv"
 )
 
-// var NAME_HOSTING_ALLOW_ORIGIN = "http://localhost"
-var NAME_HOSTING_ALLOW_ORIGIN = "http://192.168.1.2"
+//var NAME_HOSTING_ALLOW_ORIGIN = "http://localhost"
+
+var NAME_HOSTING_ALLOW_ORIGIN = "http://192.168.1.10"
 
 func NewRouter() http.Handler {
 
