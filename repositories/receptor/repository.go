@@ -254,7 +254,7 @@ func (r *ReceptorRepository) DeleteChannelPermissionReceptor(id_receptor int, ch
 	rowsAffected, _ := result.RowsAffected()
 	if rowsAffected == 0 {
 		// Nenhum registro foi deletado
-		return false
+		return true
 	}
 
 	return true

@@ -41,11 +41,20 @@ func (c *ReceptorController) DeletePermissionChannelReceptor(next http.Handler) 
 			return
 		}
 
-		strReq200 := c.repository.DeleteChannelPermissionReceptor(deleteReceptor.ReceptorID, deleteReceptor.ChannelID)
-		if strReq200 == false {
+		requestDelete := c.repository.DeleteChannelPermissionReceptor(deleteReceptor.ReceptorID, deleteReceptor.ChannelID)
+		if requestDelete == false {
 			http.Error(w, middleware.ConvertStructError("Houve um problema ao deletar o Receptor"), http.StatusInternalServerError)
 			return
 		}
+
+		var strReq200 models.JsonRequest200
+		strReq200.DataBaseID = deleteReceptor.ReceptorID
+		strReq200.MsgInsert = "Permissão removida com sucesso"
+		jsonResponse, err := json.Marshal(strReq200)
+		if err != nil {
+			http.Error(w, middleware.ConvertStructError("Trasnformação de json invalido"), http.StatusInternalServerError)
+		}
+		w.Write([]byte(jsonResponse))
 
 		next.ServeHTTP(w, r)
 	})

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"os"
 	"strconv"
 	"time"
 
@@ -463,12 +464,12 @@ func (a *AgentController) CreateAgent(next http.Handler) http.Handler {
 			http.Error(w, middlewareController.ConvertStructError(fmt.Sprintf("Valor inválido para o parâmetro '%s': %s", "email", fmt.Sprint(copyBody.Email))), http.StatusBadRequest)
 			return
 		}
-
-		if !middlewareController.IsValidInput("password", (copyBody.Password_Agent)) {
-			http.Error(w, middlewareController.ConvertStructError(fmt.Sprintf("Valor inválido para o parâmetro '%s': %s", "password", fmt.Sprint(copyBody.Password_Agent))), http.StatusBadRequest)
-			return
-		}
-
+		/*
+			if !middlewareController.IsValidInput("password", (copyBody.Password_Agent)) {
+				http.Error(w, middlewareController.ConvertStructError(fmt.Sprintf("Valor inválido para o parâmetro '%s': %s", "password", fmt.Sprint(copyBody.Password_Agent))), http.StatusBadRequest)
+				return
+			}
+		*/
 		if !middlewareController.IsValidInput("date", (copyBody.CreateAccount)) {
 			http.Error(w, middlewareController.ConvertStructError(fmt.Sprintf("Valor inválido para o parâmetro '%s': %s", "date", fmt.Sprint(copyBody.CreateAccount))), http.StatusBadRequest)
 			return
@@ -549,6 +550,8 @@ func (a *AgentController) SendEmailResetPassword(next http.Handler) http.Handler
 		///////////////////////////////////////////
 		///////////////////////////////////////////
 
+		dbHost := os.Getenv("MYSQL_HOST")
+
 		const (
 			host     = "smtp.gmail.com"
 			port     = 587
@@ -564,7 +567,7 @@ func (a *AgentController) SendEmailResetPassword(next http.Handler) http.Handler
 		msg.SetHeader("Subject", "Meta Copy 5 - Redefir sua senha")
 		//msg.SetBody("text/html", "Essa é uma mensagem automática do sistema MetaCopy5 \nPara redefinir sua senha clique aqui.\n\n\nEquipe MetaCopy5 agradece!.")
 		msg.SetBody("text/html", "Essa é uma mensagem automática do sistema MetaCopy5 <br/>"+
-			"Para redefinir sua senha <a href='http://localhost/Ryder/requestPass.php/?emailAgent="+emailAgent+"'>clique aqui</a>.<br/><br/>"+
+			"Para redefinir sua senha <a href='http://"+dbHost+"/Ryder/requestPass.php/?emailAgent="+emailAgent+"'>clique aqui</a>.<br/><br/>"+
 			"Equipe MetaCopy5 agradece!.")
 		if err := dialer.DialAndSend(msg); err != nil {
 			panic(msg)
@@ -812,7 +815,5 @@ func (a *AgentController) CheckUserExist(next http.Handler) http.Handler {
 		}
 
 		middlewareController.CreateAuthMiddleware(agent[0].ID, next).ServeHTTP(w, r)
-
-		//		next.ServeHTTP(w, r)
 	})
 }

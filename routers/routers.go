@@ -15,7 +15,7 @@ import (
 
 //var NAME_HOSTING_ALLOW_ORIGIN = "http://localhost"
 
-var NAME_HOSTING_ALLOW_ORIGIN = "http://192.168.1.10"
+var NAME_HOSTING_ALLOW_ORIGIN = "http://192.168.1.7"
 
 func NewRouter() http.Handler {
 

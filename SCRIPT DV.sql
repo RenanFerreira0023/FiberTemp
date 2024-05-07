@@ -1,3 +1,10 @@
+#
+#   
+#   GRANT ALL PRIVILEGES ON *.* TO 'root'@'192.168.1.2' IDENTIFIED BY '';
+#
+#
+#GRANT ALL PRIVILEGES ON *.* TO 'root'@'localhost' IDENTIFIED BY '';
+
 CREATE DATABASE rds_db;
 
 use rds_db;
@@ -226,15 +233,30 @@ WHERE PER.user_receptor_id = 2 ;
 SELECT id,  dt_expired_account , agent_id FROM users_receptor WHERE email = 'maria@gmail.com';
 
 
+
 SELECT UR.email AS login , CH.channel_name  AS channel_name
 FROM Permission AS PER 
 JOIN channels AS CH ON PER.channel_id = CH.id
+JOIN users_agent AS UA ON CH.users_agent_id = UA.id
 JOIN users_receptor AS UR ON UR.agent_id = UA.id
 WHERE PER.user_receptor_id = (SELECT id FROM users_receptor WHERE email ='allan@gmail.com' ) AND UR.email = 'allan@gmail.com';
 
 
+use rds_db;
+
+SELECT id, symbol, action_type, ticket, lot, target_pedding, takeprofit, stoploss, dt_send_order, user_agent_id, channel_id 
+FROM all_copy 
+WHERE dt_send_order 
+BETWEEN '2024-04-25 00:31:47' AND '2024-04-25 05:36:47' AND user_agent_id = 2 AND channel_id = 21 LIMIT 0, 30; 
 
 
 
 
+select * from all_copy;
 
+use rds_db;
+SELECT user, host FROM mysql.user;
+
+UPDATE mysql.user
+SET Host = '192.168.1.7'
+WHERE Host = '192.168.1.10'

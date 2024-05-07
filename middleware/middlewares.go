@@ -131,7 +131,8 @@ func AntiDDoS(next http.Handler) http.Handler {
 
 		client.NumRequests++
 		duration := time.Since(client.LastRequest)
-		if duration < 1*time.Second && client.NumRequests > 200 {
+		//		if duration < 1*time.Second && client.NumRequests > 200 {
+		if duration < 1*time.Second && client.NumRequests > 2000 {
 			http.Error(w, ConvertStructError("Too many requests"), http.StatusTooManyRequests)
 			return
 		}
