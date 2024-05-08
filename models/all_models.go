@@ -199,11 +199,12 @@ type BodyEditReceptor struct {
 }
 
 type RequestPermissionRequest struct {
-	ID         int    `json:"id"`
-	FirstName  string `json:"first_name"`
-	SecondName string `json:"second_name"`
-	Email      string `json:"email"`
-	ChannelID  int    `json:"channel_id"`
+	ID             int    `json:"id"`
+	FirstName      string `json:"first_name"`
+	SecondName     string `json:"second_name"`
+	Email          string `json:"email"`
+	ChannelID      int    `json:"channel_id"`
+	DateLastUpdate string `json:"dt_last_update"`
 }
 
 type RequestInformationChannel struct {

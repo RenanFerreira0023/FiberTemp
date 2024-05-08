@@ -421,21 +421,17 @@ func (r *AgentRepository) GetPermissionListOutReceptor(channelID string, agentID
 
 func (r *AgentRepository) GetPermissionListReceptor(channelID string) ([]models.RequestPermissionRequest, error) {
 	msgQuery := ""
-	msgQuery += " SELECT  users_receptor.id,  users_receptor.first_name,  users_receptor.second_name,  users_receptor.email,   permission.channel_id"
-	msgQuery += " FROM    users_receptor "
-	msgQuery += " JOIN    permission ON users_receptor.id = permission.user_receptor_id"
-	msgQuery += " WHERE   permission.channel_id = ?;"
-	rows, err := r.db.Query(msgQuery, channelID)
+	msgQuery += " SELECT  u.id,  u.first_name,  u.second_name,  u.email,   p.channel_id, COALESCE((SELECT MAX(r.dt_send_copy) FROM req_copy r WHERE r.users_receptor_id = u.id), '0') AS dt_last_update"
+	msgQuery += " FROM    users_receptor u"
+	msgQuery += " LEFT JOIN    permission p ON u.id = p.user_receptor_id AND p.channel_id = ?"
+	msgQuery += " WHERE   p.channel_id = ?;"
+	rows, err := r.db.Query(msgQuery, channelID, channelID)
 
 	if err != nil {
 		fmt.Println("\n\n ERRO : ", err.Error())
 		return nil, err
 	}
 
-	//	if !rows.Next() {
-	//		fmt.Println("null")
-	//		return nil, nil
-	//	}
 	defer rows.Close()
 
 	var bodyChannelsList []models.RequestPermissionRequest
@@ -447,7 +443,8 @@ func (r *AgentRepository) GetPermissionListReceptor(channelID string) ([]models.
 			&bodyCopyTrader.FirstName,
 			&bodyCopyTrader.SecondName,
 			&bodyCopyTrader.Email,
-			&bodyCopyTrader.ChannelID)
+			&bodyCopyTrader.ChannelID,
+			&bodyCopyTrader.DateLastUpdate)
 		if err != nil {
 			return nil, err
 		}
@@ -503,7 +500,7 @@ func (r *AgentRepository) GetPermissionChannelList(structURL models.StrutcURLGet
 	msgQuery += " LIMIT ?,?"
 	//	msgQuery := "SELECT id , users_agent_id , channel_name , dt_create_channel    FROM channels WHERE users_agent_id = ? AND dt_create_channel BETWEEN ? AND ?  LIMIT ?,?;"
 	rows, err := r.db.Query(msgQuery,
-		structURL.AgentID, structURL.DateEnd, structURL.DateStart, structURL.Offset, structURL.PageLimit)
+		structURL.AgentID, structURL.DateStart, structURL.DateEnd, structURL.Offset, structURL.PageLimit)
 
 	defer rows.Close()
 

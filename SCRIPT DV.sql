@@ -251,12 +251,63 @@ BETWEEN '2024-04-25 00:31:47' AND '2024-04-25 05:36:47' AND user_agent_id = 2 AN
 
 
 
-
-select * from all_copy;
-
+################################################
+################################################
 use rds_db;
 SELECT user, host FROM mysql.user;
 
 UPDATE mysql.user
 SET Host = '192.168.1.7'
-WHERE Host = '192.168.1.10'
+WHERE Host = '192.168.1.10';
+################################################
+################################################
+
+
+
+
+
+select count(*) from req_copy
+WHERE users_receptor_id = 8;
+
+
+SELECT dt_send_copy
+FROM req_copy
+WHERE users_receptor_id = 8
+ORDER BY dt_send_copy DESC
+LIMIT 1;
+
+
+select * from users_receptor;
+select * from permission;
+select * from channels;
+
+select * from req_copy;
+
+SELECT 
+    users_receptor.id,
+    users_receptor.first_name,
+    users_receptor.second_name,
+    users_receptor.email,
+    permission.channel_id,
+    req_copy.dt_send_copy
+    
+FROM 
+    users_receptor 
+left JOIN 
+    permission ON users_receptor.id = permission.user_receptor_id
+left JOIN
+	req_copy ON users_receptor_id = users_receptor.id
+WHERE 
+    permission.channel_id = 32;
+
+
+
+
+
+select users_receptor_id from req_copy;
+
+
+
+
+
+
