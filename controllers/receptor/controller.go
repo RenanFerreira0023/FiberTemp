@@ -132,7 +132,6 @@ func (c *ReceptorController) GetCopy(next http.Handler) http.Handler {
 			return
 		}
 
-		//	receptorID := r.URL.Query().Get("id_receptor")
 		startDateStr := r.URL.Query().Get("start_date")
 		endDateStr := r.URL.Query().Get("end_date")
 
@@ -150,6 +149,14 @@ func (c *ReceptorController) GetCopy(next http.Handler) http.Handler {
 			return
 		}
 
+		//////////////////////
+		//// Conferir permissão no canal
+		//////////////////////
+		err = c.repository.GetPermissionChannel(channelIDstr, receptorIDstr)
+		if err != nil {
+			http.Error(w, middleware.ConvertStructError("Você não tem permissão para acessar esse canal"), http.StatusNotFound)
+			return
+		}
 		var structURL models.StrutcURLCopyTrader
 		structURL.AgentID = agentIDstr
 		structURL.ChannelID = channelIDstr

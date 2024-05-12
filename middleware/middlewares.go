@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"net"
 	"net/http"
 	"os"
 	"strings"
@@ -120,24 +121,79 @@ func ConvertStructError(message string) string {
 var clients sync.Map
 
 func AntiDDoS(next http.Handler) http.Handler {
+	//////////////////////////////////
+	//////// SETUP ///////////////////
+	cycleTimeout := 1 * time.Minute      // Tempo de expiração para novas requisições
+	maxRequests := 350                   // Numero de requisição permitidas por minuto
+	expirationTimeout := 5 * time.Minute // Tempo para redefinir o contador de solicitações
+	//////////////////////////////////
+	//////////////////////////////////
+
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		ip := r.RemoteAddr
+		ip, _, _ := net.SplitHostPort(r.RemoteAddr) // Obtém apenas o endereço IP, ignorando a porta
 
 		value, _ := clients.LoadOrStore(ip, &models.MiddlewareStruct{
 			NumRequests: 1,
-			LastRequest: time.Now(),
+			StartTime:   time.Now(),                   // horario da primeira solicitacao
+			LastUptdate: time.Now(),                   // horario da ultima atualização
+			CycleTime:   time.Now().Add(cycleTimeout), // Horario da dutração de um ciclo
+			ExpiredTime: time.Now().Add(expirationTimeout),
 		})
 		client := value.(*models.MiddlewareStruct)
 
+		client.LastUptdate = time.Now()
 		client.NumRequests++
-		duration := time.Since(client.LastRequest)
-		//		if duration < 1*time.Second && client.NumRequests > 200 {
-		if duration < 1*time.Second && client.NumRequests > 2000 {
-			http.Error(w, ConvertStructError("Too many requests"), http.StatusTooManyRequests)
-			return
+
+		// Log das informações do cliente e da duração desde a primeira solicitação
+		/*
+			duration := time.Since(client.StartTime) // Calcula a duração desde a primeira solicitação
+			fmt.Println("\nIP do Cliente:", ip)
+			fmt.Println("Número de solicitações do cliente:", client.NumRequests, " / ", maxRequests)
+			fmt.Println("Duração desde a primeira solicitação (segundos):", int(duration.Seconds()))
+			fmt.Println("duration.Seconds() ~~~~ expirationTimeout.Seconds()", duration.Seconds(), "		~~~~~  ", expirationTimeout.Seconds())
+		*/
+
+		// controle numero requisição
+		isMaxRequest := false
+		if client.NumRequests > maxRequests {
+			isMaxRequest = true
 		}
 
-		client.LastRequest = time.Now()
+		// controle tempo
+		isNextCycle := false
+		if time.Now().After(client.CycleTime) {
+			isNextCycle = true
+		}
+
+		if isMaxRequest == true && isNextCycle == true {
+			if time.Now().After(client.ExpiredTime) {
+				//				fmt.Println("~~~~ RESETOU")
+				client.NumRequests = 1
+				client.StartTime = time.Now()
+				client.LastUptdate = time.Now()
+				client.CycleTime = time.Now().Add(cycleTimeout)
+
+			} else {
+				client.ExpiredTime.Add(expirationTimeout)
+				http.Error(w, ConvertStructError("Por favor, tente novamente mais tarde."), http.StatusTooManyRequests)
+				return
+			}
+		}
+
+		if isMaxRequest == false && isNextCycle == true {
+			// reseta
+			//			fmt.Println("~~~~ RESETOU")
+			client.NumRequests = 1
+			client.StartTime = time.Now()
+			client.LastUptdate = time.Now()
+			client.CycleTime = time.Now().Add(cycleTimeout)
+		}
+
+		if isMaxRequest == true && isNextCycle == false {
+			// travar
+			http.Error(w, ConvertStructError("Por favor, tente novamente mais tarde."), http.StatusTooManyRequests)
+			return
+		}
 
 		next.ServeHTTP(w, r)
 	})

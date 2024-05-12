@@ -1,13 +1,28 @@
 package models
 
-import "time"
+import (
+	"time"
+)
 
 var LayoutDate = "2006-01-02 15:04:05"
 
 type MiddlewareStruct struct {
 	NumRequests int
-	LastRequest time.Time
+	StartTime   time.Time
+	ExpiredTime time.Time
+	IsBlocked   bool
+	LastUptdate time.Time
+
+	CycleTime time.Time
 }
+
+type Config struct {
+	RateLimitMiddleware struct {
+		Limit  int           `yaml:"limit"`
+		Window time.Duration `yaml:"window"`
+	} `yaml:"rateLimitMiddleware"`
+}
+
 type MessageError struct {
 	MsgError string `json:"message_error"`
 }

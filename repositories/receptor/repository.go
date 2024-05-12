@@ -51,8 +51,10 @@ func (r *ReceptorRepository) CheckReqCopy(idChannel int, idReceptor int, idAllCo
 
 func (r *ReceptorRepository) GetCopyTrader(structURL models.StrutcURLCopyTrader) ([]models.BodyCopyTrader, error) {
 
-	rows, err := r.db.Query("SELECT id, symbol, action_type, ticket, lot, target_pedding, takeprofit, stoploss, dt_send_order, user_agent_id, channel_id   FROM all_copy WHERE dt_send_order BETWEEN ? AND ? AND user_agent_id = ? AND channel_id = ? LIMIT ?,?;",
+	query := fmt.Sprintf("SELECT id, symbol, action_type, ticket, lot, target_pedding, takeprofit, stoploss, dt_send_order, user_agent_id, channel_id FROM all_copy WHERE dt_send_order BETWEEN '%s' AND '%s' AND user_agent_id = '%d' AND channel_id = '%d' LIMIT %d,%d;",
 		structURL.DateStart, structURL.DateEnd, structURL.AgentID, structURL.ChannelID, structURL.Offset, structURL.PageLimit)
+
+	rows, err := r.db.Query(query)
 
 	defer rows.Close()
 

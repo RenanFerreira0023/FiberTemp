@@ -283,31 +283,30 @@ select * from channels;
 
 select * from req_copy;
 
+
+
+
+
+
+
+
+
+
+
+
 SELECT 
-    users_receptor.id,
-    users_receptor.first_name,
-    users_receptor.second_name,
-    users_receptor.email,
-    permission.channel_id,
-    req_copy.dt_send_copy
-    
+    u.id,
+    u.first_name,
+    u.second_name,
+    u.email,
+    p.channel_id,
+    (SELECT MAX(r.dt_send_copy) FROM req_copy r WHERE r.users_receptor_id = u.id) AS latest_dt_send_copy
 FROM 
-    users_receptor 
-left JOIN 
-    permission ON users_receptor.id = permission.user_receptor_id
-left JOIN
-	req_copy ON users_receptor_id = users_receptor.id
-WHERE 
-    permission.channel_id = 32;
-
-
-
-
-
-select users_receptor_id from req_copy;
-
-
-
+    users_receptor u
+LEFT JOIN 
+    permission p ON u.id = p.user_receptor_id AND p.channel_id = 21
+WHERE
+	p.channel_id = 21;
 
 
 
