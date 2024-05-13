@@ -16,13 +16,6 @@ type MiddlewareStruct struct {
 	CycleTime time.Time
 }
 
-type Config struct {
-	RateLimitMiddleware struct {
-		Limit  int           `yaml:"limit"`
-		Window time.Duration `yaml:"window"`
-	} `yaml:"rateLimitMiddleware"`
-}
-
 type MessageError struct {
 	MsgError string `json:"message_error"`
 }

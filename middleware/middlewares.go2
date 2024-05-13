@@ -4,11 +4,9 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"log"
 	"net"
 	"net/http"
 	"os"
-	"strconv"
 	"strings"
 	"sync"
 
@@ -132,7 +130,6 @@ func AntiDDoS(next http.Handler) http.Handler {
 	//////////////////////////////////
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-
 		ip, _, _ := net.SplitHostPort(r.RemoteAddr) // Obtém apenas o endereço IP, ignorando a porta
 
 		value, _ := clients.LoadOrStore(ip, &models.MiddlewareStruct{
@@ -148,22 +145,13 @@ func AntiDDoS(next http.Handler) http.Handler {
 		client.NumRequests++
 
 		// Log das informações do cliente e da duração desde a primeira solicitação
-		duration := time.Since(client.StartTime) // Calcula a duração desde a primeira solicitação
-		seconds := int(duration.Seconds())       // Converte a duração para segundos como um valor inteiro
-		msgSave := "\n\nIP do Cliente: " + ip
-		msgSave += "\nHorario atual " + time.Now().Format(models.LayoutDate)
-		msgSave += "\nMétodo da Requisição: " + r.Method    // Método da requisição (GET, POST, etc.)
-		msgSave += "\nURL da Requisição: " + r.URL.String() // URL da requisição
-		msgSave += "\nHost da Requisição: " + r.Host        // Host da requisição
-		msgSave += "\nNúmero de solicitações do cliente: " + strconv.Itoa(client.NumRequests) + " / " + strconv.Itoa(maxRequests)
-		msgSave += "\nDuração desde a primeira solicitação (segundos):" + strconv.Itoa(seconds)
-
-		formattedDateTime := time.Now().Format("2006-01-02")
-		logger, err := NewLogger("./Logs/REGISTRO_SIS_" + formattedDateTime + ".txt")
-		if err != nil {
-			log.Fatal("Erro ao criar logger:", err)
-		}
-		defer logger.Close()
+		/*
+			duration := time.Since(client.StartTime) // Calcula a duração desde a primeira solicitação
+			fmt.Println("\nIP do Cliente:", ip)
+			fmt.Println("Número de solicitações do cliente:", client.NumRequests, " / ", maxRequests)
+			fmt.Println("Duração desde a primeira solicitação (segundos):", int(duration.Seconds()))
+			fmt.Println("duration.Seconds() ~~~~ expirationTimeout.Seconds()", duration.Seconds(), "		~~~~~  ", expirationTimeout.Seconds())
+		*/
 
 		// controle numero requisição
 		isMaxRequest := false
@@ -179,8 +167,7 @@ func AntiDDoS(next http.Handler) http.Handler {
 
 		if isMaxRequest == true && isNextCycle == true {
 			if time.Now().After(client.ExpiredTime) {
-				msgSave += "\n~~~~ RESETOU"
-
+				//				fmt.Println("~~~~ RESETOU")
 				client.NumRequests = 1
 				client.StartTime = time.Now()
 				client.LastUptdate = time.Now()
@@ -188,7 +175,6 @@ func AntiDDoS(next http.Handler) http.Handler {
 
 			} else {
 				client.ExpiredTime.Add(expirationTimeout)
-				logger.Log(msgSave)
 				http.Error(w, ConvertStructError("Por favor, tente novamente mais tarde."), http.StatusTooManyRequests)
 				return
 			}
@@ -196,7 +182,7 @@ func AntiDDoS(next http.Handler) http.Handler {
 
 		if isMaxRequest == false && isNextCycle == true {
 			// reseta
-			msgSave += "\n~~~~ RESETOU"
+			//			fmt.Println("~~~~ RESETOU")
 			client.NumRequests = 1
 			client.StartTime = time.Now()
 			client.LastUptdate = time.Now()
@@ -205,49 +191,10 @@ func AntiDDoS(next http.Handler) http.Handler {
 
 		if isMaxRequest == true && isNextCycle == false {
 			// travar
-			logger.Log(msgSave)
 			http.Error(w, ConvertStructError("Por favor, tente novamente mais tarde."), http.StatusTooManyRequests)
 			return
 		}
-		fmt.Print(msgSave)
-		logger.Log(msgSave)
 
 		next.ServeHTTP(w, r)
 	})
-}
-
-type Logger struct {
-	logger *log.Logger
-	file   *os.File
-}
-
-// NewLogger cria um novo Logger com o arquivo especificado
-func NewLogger(filename string) (*Logger, error) {
-	// Abre ou cria o arquivo de log
-	file, err := os.OpenFile(filename, os.O_CREATE|os.O_APPEND|os.O_WRONLY, 0644)
-	if err != nil {
-		return nil, err
-	}
-
-	// Cria o logger
-	logger := log.New(file, "", log.LstdFlags)
-
-	return &Logger{
-		logger: logger,
-		file:   file,
-	}, nil
-}
-
-// Log escreve uma mensagem de log
-func (l *Logger) Log(message string) {
-	l.logger.Println(message)
-}
-
-// Close fecha o arquivo de log e o logger
-func (l *Logger) Close() error {
-	err := l.file.Close()
-	if err != nil {
-		return err
-	}
-	return nil
 }
