@@ -3,6 +3,7 @@ package routers
 import (
 	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/RenanFerreira0023/FiberTemp/config"
 	controllerAgent "github.com/RenanFerreira0023/FiberTemp/controllers/agent"
@@ -13,11 +14,12 @@ import (
 	"github.com/joho/godotenv"
 )
 
-//var NAME_HOSTING_ALLOW_ORIGIN = "http://localhost"
-
-var NAME_HOSTING_ALLOW_ORIGIN = "http://192.168.1.9"
-
 func NewRouter() http.Handler {
+	err := godotenv.Load()
+	if err != nil {
+		fmt.Println("Error loading .env file  ", err.Error())
+	}
+	NAME_HOSTING_ALLOW_ORIGIN := os.Getenv("NAME_HOSTING_ALLOW_ORIGIN")
 
 	db := config.NewDB()
 
@@ -775,8 +777,9 @@ func NewRouter() http.Handler {
 func handleOptionsRequest(w http.ResponseWriter, r *http.Request) {
 	err := godotenv.Load()
 	if err != nil {
-		fmt.Println("Erro ao carregar o arquivo .env")
+		fmt.Println("Error loading .env file  ", err.Error())
 	}
+	NAME_HOSTING_ALLOW_ORIGIN := os.Getenv("NAME_HOSTING_ALLOW_ORIGIN")
 
 	w.Header().Set("Access-Control-Allow-Origin", NAME_HOSTING_ALLOW_ORIGIN)
 	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")

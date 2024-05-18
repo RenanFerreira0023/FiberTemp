@@ -188,6 +188,7 @@ func AntiDDoS(next http.Handler) http.Handler {
 
 			} else {
 				client.ExpiredTime.Add(expirationTimeout)
+				fmt.Print(msgSave)
 				logger.Log(msgSave)
 				http.Error(w, ConvertStructError("Por favor, tente novamente mais tarde."), http.StatusTooManyRequests)
 				return
@@ -205,6 +206,8 @@ func AntiDDoS(next http.Handler) http.Handler {
 
 		if isMaxRequest == true && isNextCycle == false {
 			// travar
+			client.ExpiredTime.Add(expirationTimeout)
+			fmt.Print(msgSave)
 			logger.Log(msgSave)
 			http.Error(w, ConvertStructError("Por favor, tente novamente mais tarde."), http.StatusTooManyRequests)
 			return
