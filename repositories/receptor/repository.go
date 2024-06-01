@@ -23,7 +23,7 @@ func (r *ReceptorRepository) InsertReqCopy(bodyReqCopy models.QueryRequestReqCop
 	var dateSendOrder = bodyReqCopy.DateSendOrder
 
 	var idUser int
-	errCheck := r.db.QueryRow("SELECT id FROM req_copy WHERE channel_id = ? AND all_copy_id = ? ;", channelID, allCopyID).Scan(&idUser)
+	errCheck := r.db.QueryRow("SELECT id FROM req_copy WHERE channel_id = ? AND users_receptor_id = ? all_copy_id = ? ;", channelID, receptorID, allCopyID).Scan(&idUser)
 	if errCheck == nil {
 		return 0, fmt.Errorf("Essa ação ja foi executada")
 	}
@@ -40,21 +40,34 @@ func (r *ReceptorRepository) InsertReqCopy(bodyReqCopy models.QueryRequestReqCop
 	return int(insertID), nil
 }
 
-func (r *ReceptorRepository) CheckReqCopy(idChannel int, idReceptor int, idAllCopy int, dateSendOrder string) error {
+/*
+
+func (r *ReceptorRepository) CheckReqCopy(idChannel int, idReceptor int, idAllCopy int, dateSendOrder string) string {
 	var idUser int
 	err := r.db.QueryRow("SELECT id FROM req_copy WHERE channel_id = ? AND users_receptor_id = ? AND all_copy_id = ? ;", idChannel, idReceptor, idAllCopy).Scan(&idUser)
 	if err == nil {
-		return fmt.Errorf("Ja respondeu essa requisicao")
+		return "NAO_ACIONADO" //fmt.Errorf("Ja respondeu essa requisicao")
 	}
-	return nil
+	return "JA_ACIONADO"
+}
+*/
+
+func (r *ReceptorRepository) CheckReqCopy(idChannel int, idReceptor int, idAllCopy int) string {
+	var idUser int
+	r.db.QueryRow("SELECT id FROM req_copy WHERE channel_id = ? AND users_receptor_id = ? AND all_copy_id = ? ;", idChannel, idReceptor, idAllCopy).Scan(&idUser)
+	if idUser == 0 {
+		return "NAO_ACIONADO" //fmt.Errorf("Ja respondeu essa requisicao")
+	}
+	return "JA_ACIONADO"
 }
 
 func (r *ReceptorRepository) GetCopyTrader(structURL models.StrutcURLCopyTrader) ([]models.BodyCopyTrader, error) {
 
-	query := fmt.Sprintf("SELECT id, symbol, action_type, ticket, lot, target_pedding, takeprofit, stoploss, dt_send_order, user_agent_id, channel_id FROM all_copy WHERE dt_send_order BETWEEN '%s' AND '%s' AND user_agent_id = '%d' AND channel_id = '%d' LIMIT %d,%d;",
-		structURL.DateStart, structURL.DateEnd, structURL.AgentID, structURL.ChannelID, structURL.Offset, structURL.PageLimit)
+	//	fmt.Printf("\n\nSELECT id, symbol, action_type, ticket, lot, target_pedding, takeprofit, stoploss, dt_send_order, user_agent_id, channel_id FROM all_copy WHERE dt_send_order BETWEEN '%s' AND '%s' AND user_agent_id = %d AND channel_id = %d LIMIT %d, %d;",
+	//		structURL.DateStart, structURL.DateEnd, structURL.AgentID, structURL.ChannelID, structURL.Offset, structURL.PageLimit)
 
-	rows, err := r.db.Query(query)
+	rows, err := r.db.Query("SELECT id, symbol, action_type, ticket, lot, target_pedding, takeprofit, stoploss, dt_send_order, user_agent_id, channel_id FROM all_copy WHERE dt_send_order BETWEEN ? AND ? AND user_agent_id = ? AND channel_id = ? LIMIT ?,?;",
+		structURL.DateStart, structURL.DateEnd, structURL.AgentID, structURL.ChannelID, structURL.Offset, structURL.PageLimit)
 
 	defer rows.Close()
 

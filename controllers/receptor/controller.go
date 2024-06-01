@@ -154,9 +154,10 @@ func (c *ReceptorController) GetCopy(next http.Handler) http.Handler {
 		//////////////////////
 		err = c.repository.GetPermissionChannel(channelIDstr, receptorIDstr)
 		if err != nil {
-			http.Error(w, middleware.ConvertStructError("Você não tem permissão para acessar esse canal"), http.StatusNotFound)
+			http.Error(w, middleware.ConvertStructError("Você não tem permissão para acessar esse canal"), http.StatusUnauthorized)
 			return
 		}
+
 		var structURL models.StrutcURLCopyTrader
 		structURL.AgentID = agentIDstr
 		structURL.ChannelID = channelIDstr
@@ -179,8 +180,9 @@ func (c *ReceptorController) GetCopy(next http.Handler) http.Handler {
 		var countLoop = len(requestCopyTrader)
 		var arrayBodyResponde []models.BodyCopyTrader
 		for i := 0; i < (countLoop); i++ {
-			errReq := c.repository.CheckReqCopy(requestCopyTrader[i].ChannelID, receptorIDstr, requestCopyTrader[i].ID, requestCopyTrader[i].DateEntry.Format(models.LayoutDate))
-			if errReq == nil {
+			errReq := c.repository.CheckReqCopy(requestCopyTrader[i].ChannelID, receptorIDstr, requestCopyTrader[i].ID)
+			if errReq == "NAO_ACIONADO" {
+				fmt.Print("\n \n NAO ACIONADO ID : ", requestCopyTrader[i].ID)
 				arrayBodyResponde = append(arrayBodyResponde, requestCopyTrader[i])
 			}
 		}
