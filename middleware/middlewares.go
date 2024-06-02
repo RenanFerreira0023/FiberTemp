@@ -165,6 +165,8 @@ func AntiDDoS(next http.Handler) http.Handler {
 		}
 		defer logger.Close()
 
+		log.SetOutput(logger.file)
+
 		// controle numero requisição
 		isMaxRequest := false
 		if client.NumRequests > maxRequests {
