@@ -62,9 +62,61 @@ func (r *ReceptorRepository) CheckReqCopy(idChannel int, idReceptor int, idAllCo
 }
 
 func (r *ReceptorRepository) GetCopyTrader(structURL models.StrutcURLCopyTrader) ([]models.BodyCopyTrader, error) {
+	var allBodyCopyTraders []models.BodyCopyTrader
+	structURL.Offset = 0
 
-	//	fmt.Printf("\n\nSELECT id, symbol, action_type, ticket, lot, target_pedding, takeprofit, stoploss, dt_send_order, user_agent_id, channel_id FROM all_copy WHERE dt_send_order BETWEEN '%s' AND '%s' AND user_agent_id = %d AND channel_id = %d LIMIT %d, %d;",
-	//		structURL.DateStart, structURL.DateEnd, structURL.AgentID, structURL.ChannelID, structURL.Offset, structURL.PageLimit)
+	for {
+		fmt.Printf("\n\nSELECT id, symbol, action_type, ticket, lot, target_pedding, takeprofit, stoploss, dt_send_order, user_agent_id, channel_id FROM all_copy WHERE dt_send_order BETWEEN '%s' AND '%s' AND user_agent_id = %d AND channel_id = %d LIMIT %d, %d;",
+			structURL.DateStart, structURL.DateEnd, structURL.AgentID, structURL.ChannelID, structURL.Offset, structURL.PageLimit)
+
+		rows, err := r.db.Query("SELECT id, symbol, action_type, ticket, lot, target_pedding, takeprofit, stoploss, dt_send_order, user_agent_id, channel_id FROM all_copy WHERE dt_send_order BETWEEN ? AND ? AND user_agent_id = ? AND channel_id = ? LIMIT ?,?;",
+			structURL.DateStart, structURL.DateEnd, structURL.AgentID, structURL.ChannelID, structURL.Offset, structURL.PageLimit)
+
+		if err != nil {
+			fmt.Println("\n\n ERRO : ", err.Error())
+			return nil, err
+		}
+
+		defer rows.Close()
+
+		var bodyCopyTraders []models.BodyCopyTrader
+
+		for rows.Next() {
+			var bodyCopyTrader models.BodyCopyTrader
+			err = rows.Scan(
+				&bodyCopyTrader.ID,
+				&bodyCopyTrader.Symbol,
+				&bodyCopyTrader.ActionType,
+				&bodyCopyTrader.Ticket,
+				&bodyCopyTrader.Lot,
+				&bodyCopyTrader.TargetPedding,
+				&bodyCopyTrader.TakeProfit,
+				&bodyCopyTrader.StopLoss,
+				&bodyCopyTrader.DateEntry,
+				&bodyCopyTrader.AgentID,
+				&bodyCopyTrader.ChannelID,
+			)
+			if err != nil {
+				return nil, err
+			}
+			bodyCopyTraders = append(bodyCopyTraders, bodyCopyTrader)
+		}
+
+		if len(bodyCopyTraders) == 0 {
+			break
+		}
+
+		allBodyCopyTraders = append(allBodyCopyTraders, bodyCopyTraders...)
+		structURL.Offset += structURL.PageLimit
+	}
+
+	return allBodyCopyTraders, nil
+}
+
+func (r *ReceptorRepository) GetCopyTrader2(structURL models.StrutcURLCopyTrader) ([]models.BodyCopyTrader, error) {
+
+	fmt.Printf("\n\nSELECT id, symbol, action_type, ticket, lot, target_pedding, takeprofit, stoploss, dt_send_order, user_agent_id, channel_id FROM all_copy WHERE dt_send_order BETWEEN '%s' AND '%s' AND user_agent_id = %d AND channel_id = %d LIMIT %d, %d;",
+		structURL.DateStart, structURL.DateEnd, structURL.AgentID, structURL.ChannelID, structURL.Offset, structURL.PageLimit)
 
 	rows, err := r.db.Query("SELECT id, symbol, action_type, ticket, lot, target_pedding, takeprofit, stoploss, dt_send_order, user_agent_id, channel_id FROM all_copy WHERE dt_send_order BETWEEN ? AND ? AND user_agent_id = ? AND channel_id = ? LIMIT ?,?;",
 		structURL.DateStart, structURL.DateEnd, structURL.AgentID, structURL.ChannelID, structURL.Offset, structURL.PageLimit)
