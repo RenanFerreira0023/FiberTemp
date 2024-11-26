@@ -4,24 +4,13 @@ FROM golang:1.21.0-bullseye AS build
 WORKDIR /app
 
 # Copia os arquivos go.mod, go.sum e main.go
-COPY go.mod ./
-COPY go.sum ./
-COPY main.go ./
+COPY go.mod go.sum main.go ./
 
 # Baixa as dependências
 RUN go mod download
 
-# Copia todas as pastas
-COPY config/ ./config
-COPY controllers/agent/ ./controllers/agent
-COPY controllers/middleware/ ./controllers/middleware
-COPY controllers/receptor/ ./controllers/receptor
-COPY Logs/ ./Logs
-COPY middleware/ ./middleware
-COPY models/ ./models
-COPY repositories/agent/ ./repositories/agent
-COPY repositories/receptor/ ./repositories/receptor
-COPY routers/ ./routers
+# Copia o código fonte
+COPY . .
 
 # Constroi a imagem
 RUN go build -o /server
@@ -31,18 +20,15 @@ FROM gcr.io/distroless/base-debian10
 
 WORKDIR /
 
-# Cria o usuário não root
-RUN addgroup --system nonroot && adduser --system --ingroup nonroot nonroot
-
 # Copia o binário construído e o arquivo .env
 COPY --from=build /server /server
 COPY .env ./.env
 
-# Copia o diretório de logs criado na etapa anterior
+# Copia o diretório de logs
 COPY --from=build /Logs /Logs
 
 # Ajusta permissões no estágio final
-RUN chown -R nonroot:nonroot /Logs && chmod -R 777 /Logs
+RUN chmod -R 777 /Logs
 
 # Define a porta que será exposta
 EXPOSE 8080

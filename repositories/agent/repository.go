@@ -72,6 +72,7 @@ func (r *AgentRepository) SendCopy(bodyCopy models.QueryBodySendCopy) (int, erro
 	var agentId = bodyCopy.UserAgentID
 	var channelId = bodyCopy.ChannelID
 
+	fmt.Print("actionType   " + actionType)
 	request, err := r.db.Exec("INSERT INTO all_copy (symbol, action_type, ticket, lot, target_pedding, takeprofit, stoploss, dt_send_order, user_agent_id, channel_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
 		symbol, actionType, ticket, lot, targetPedding, takeprofit, stoploss, dateEntry, agentId, channelId)
 	if err != nil {

@@ -64,6 +64,8 @@ func (a *AgentController) InsertPermissionChannel(next http.Handler) http.Handle
 func (a *AgentController) InsertCopy(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// recupera tudo do body
+
+		fmt.Print("xxxxdsfhdsiufhdisu\n\nn\no")
 		var sendCopyBody models.QueryBodySendCopy
 		if err := json.NewDecoder(r.Body).Decode(&sendCopyBody); err != nil {
 			http.Error(w, middleware.ConvertStructError(err.Error()), http.StatusBadRequest)

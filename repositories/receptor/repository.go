@@ -66,8 +66,8 @@ func (r *ReceptorRepository) GetCopyTrader(structURL models.StrutcURLCopyTrader)
 	structURL.Offset = 0
 
 	for {
-		fmt.Printf("\n\nSELECT id, symbol, action_type, ticket, lot, target_pedding, takeprofit, stoploss, dt_send_order, user_agent_id, channel_id FROM all_copy WHERE dt_send_order BETWEEN '%s' AND '%s' AND user_agent_id = %d AND channel_id = %d LIMIT %d, %d;",
-			structURL.DateStart, structURL.DateEnd, structURL.AgentID, structURL.ChannelID, structURL.Offset, structURL.PageLimit)
+		//		fmt.Printf("\n\nSELECT id, symbol, action_type, ticket, lot, target_pedding, takeprofit, stoploss, dt_send_order, user_agent_id, channel_id FROM all_copy WHERE dt_send_order BETWEEN '%s' AND '%s' AND user_agent_id = %d AND channel_id = %d LIMIT %d, %d;",
+		//			structURL.DateStart, structURL.DateEnd, structURL.AgentID, structURL.ChannelID, structURL.Offset, structURL.PageLimit)
 
 		rows, err := r.db.Query("SELECT id, symbol, action_type, ticket, lot, target_pedding, takeprofit, stoploss, dt_send_order, user_agent_id, channel_id FROM all_copy WHERE dt_send_order BETWEEN ? AND ? AND user_agent_id = ? AND channel_id = ? LIMIT ?,?;",
 			structURL.DateStart, structURL.DateEnd, structURL.AgentID, structURL.ChannelID, structURL.Offset, structURL.PageLimit)

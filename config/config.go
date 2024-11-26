@@ -40,7 +40,7 @@ func NewDB() *sql.DB {
 		panic(err)
 	}
 
-	//	CreateTables(db)
+	CreateTables(db)
 	return db
 }
 
@@ -53,7 +53,7 @@ func CreateTables(db *sql.DB) {
 		panic(errTbAgent)
 	}
 
-	createTableReceptor := "CREATE TABLE users_receptor (  id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,  first_name VARCHAR(200),  second_name VARCHAR(200),  email VARCHAR(150),  dt_create_account DATETIME,  dt_expired_account DATETIME,  agent_id INT,    FOREIGN KEY (agent_id) REFERENCES users_agent(id)  )"
+	createTableReceptor := "CREATE TABLE IF NOT EXISTS users_receptor (  id INT NOT NULL PRIMARY KEY AUTO_INCREMENT,  first_name VARCHAR(200),  second_name VARCHAR(200),  email VARCHAR(150),  dt_create_account DATETIME,  dt_expired_account DATETIME,  agent_id INT,    FOREIGN KEY (agent_id) REFERENCES users_agent(id)  )"
 	_, errTbReceptor := db.Exec(createTableReceptor)
 	if errTbReceptor != nil {
 		panic(errTbReceptor)
